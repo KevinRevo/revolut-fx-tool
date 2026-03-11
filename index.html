@@ -1629,14 +1629,13 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Changement d'URL pour v1beta (plus permissive sur les modèles flash) 
-    // et correction de la syntaxe du modèle
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Changement pour gemini-1.5-flash-latest (plus résilient aux erreurs 404)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
             parts: [{ 
-                text: sys + "\n\nVoici ma demande spécifique : " + usr 
+                text: sys + "\n\n" + usr 
             }]
         }]
     };
@@ -1644,21 +1643,16 @@ async function apiCall(sys, usr, isJson = false) {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
-        // Si Google renvoie une erreur (404, 400, etc.)
         if (!response.ok) {
-            console.error("Détails Erreur API Google:", result);
+            console.error("Erreur API détaillée:", result);
             throw new Error(`Erreur ${response.status}`);
         }
 
-        // Extraction du texte de la réponse
         if (result.candidates && result.candidates[0].content) {
             const generatedText = result.candidates[0].content.parts[0].text;
             globalLoader.classList.add('hidden');
@@ -1668,10 +1662,9 @@ async function apiCall(sys, usr, isJson = false) {
         throw new Error("Réponse vide");
 
     } catch (err) {
-        console.error("Erreur de connexion API:", err);
+        console.error("DEBUG:", err);
         globalLoader.classList.add('hidden');
-        // Message de secours pour ne pas bloquer l'utilisateur
-        return isJson ? '{"text": "Analyse momentanément indisponible.", "score": 50}' : "L'IA est occupée, veuillez réessayer dans quelques secondes.";
+        return isJson ? '{"text": "Erreur d\'analyse", "score": 50}' : "L'IA est indisponible.";
     }
 }
 
@@ -1703,6 +1696,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
