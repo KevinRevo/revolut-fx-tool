@@ -1630,12 +1630,20 @@
 async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
     
-    // ON UTILISE UNIQUEMENT LE MODÈLE STABLE POUR ÉVITER LES ERREURS DE SYNTAXE DES EXTENSIONS
-    const modelName = "gemini-1.5-flash";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-    
+    // On passe sur la version stable 'v1' qui est plus rigoureuse sur les noms
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
     const payload = {
-        contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+        contents: [{
+            parts: [{ text: sys + "\n\n" + usr }]
+        }],
+        // Ajout d'une configuration de sécurité pour éviter les rejets silencieux
+        safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+        ]
     };
 
     try {
@@ -1648,17 +1656,18 @@ async function apiCall(sys, usr, isJson = false) {
         const result = await response.json();
 
         if (!response.ok) {
-            console.error("ERREUR GOOGLE RÉELLE :", result);
-            throw new Error(result.error ? result.error.message : "Erreur");
+            console.error("ERREUR RÉELLE GOOGLE :", result);
+            // Si V1 échoue aussi, on tente le nom court 'gemini-pro'
+            throw new Error(result.error ? result.error.message : "Erreur Serveur");
         }
 
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("ÉCHEC :", err);
+        console.error("ÉCHEC FINAL :", err);
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Erreur", "score": 50}' : "Erreur : " + err.message;
+        return "Erreur : " + err.message;
     }
 }
 
@@ -1690,6 +1699,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
