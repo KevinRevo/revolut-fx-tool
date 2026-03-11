@@ -1630,34 +1630,41 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // On utilise le modèle 'gemini-pro', le plus compatible de tous
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    // Correction de l'URL : On utilise gemini-1.5-flash qui est disponible sur v1beta
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
-            parts: [{ text: sys + "\n\nDEMANDE UTILISATEUR : " + usr }]
+            parts: [{ text: sys + "\n\n" + usr }]
         }]
     };
 
     try {
         const response = await fetch(url, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            console.error("Détails Erreur Google:", result);
-            throw new Error(result.error ? result.error.message : "Erreur Serveur");
+            console.error("Détails Erreur API Google:", result);
+            // Si gemini-1.5-flash n'est pas dispo, on tente le nom complet de gemini-pro
+            if (result.error && result.error.status === "NOT_FOUND") {
+                 return "Erreur de configuration du modèle. Contactez l'administrateur.";
+            }
+            throw new Error(`Code ${response.status}`);
         }
 
-        return result.candidates[0].content.parts[0].text;
+        const generatedText = result.candidates[0].content.parts[0].text;
+        globalLoader.classList.add('hidden');
+        return generatedText;
 
     } catch (err) {
-        console.error("Crash définitif :", err);
+        console.error("Crash connexion:", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA ne répond pas. Vérifie le lien de test (étape 1).";
+        return isJson ? '{"text": "Analyse momentanément indisponible.", "score": 50}' : "L'assistant est surchargé. Réessayez dans un instant.";
     }
 }
     function copyPitch() {
@@ -1688,6 +1695,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
