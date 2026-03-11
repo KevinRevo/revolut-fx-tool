@@ -1629,13 +1629,15 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // URL STABLE V1 (Celle que tu veux, point final)
+    // URL STABLE V1
     const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-    // On met TOUT dans le texte pour être sûr que Google accepte
+    // ON FUSIONNE TOUT DANS "text". C'est le SEUL moyen d'éviter l'erreur 400/404 sur l'URL v1.
     const payload = {
         contents: [{
-            parts: [{ text: "CONSIGNES: " + sys + "\n\nREQUETE: " + usr }]
+            parts: [{ 
+                text: "CONSIGNES SYSTÈME (À RESPECTER IMPÉRATIVEMENT) : " + sys + "\n\nREQUÊTE DE L'UTILISATEUR : " + usr 
+            }]
         }]
     };
 
@@ -1646,22 +1648,26 @@ async function apiCall(sys, usr, isJson = false) {
             body: JSON.stringify(payload)
         });
 
+        const result = await response.json();
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Détails Erreur API:", errorData);
+            console.error("Détails Erreur Google API:", result);
             throw new Error(`Erreur ${response.status}`);
         }
 
-        const result = await response.json();
-        const generatedText = result.candidates[0].content.parts[0].text;
-        globalLoader.classList.add('hidden');
-        return generatedText;
+        if (result.candidates && result.candidates[0].content) {
+            const generatedText = result.candidates[0].content.parts[0].text;
+            globalLoader.classList.add('hidden');
+            return generatedText;
+        }
+        
+        throw new Error("Réponse vide de l'IA");
 
     } catch (err) {
-        console.error("Erreur de connexion:", err);
+        console.error("Erreur de connexion :", err);
         globalLoader.classList.add('hidden');
-        // Si l'analyse de marché (JSON) échoue, on renvoie un objet par défaut pour ne pas crash le code
-        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA ne répond pas, réessayez.";
+        // Si l'IA bug, on renvoie un texte par défaut pour ne pas bloquer l'AE en appel
+        return isJson ? '{"text": "Analyse momentanément indisponible.", "score": 50}' : "L'IA est occupée, veuillez réessayer.";
     }
 }
 
@@ -1693,6 +1699,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
