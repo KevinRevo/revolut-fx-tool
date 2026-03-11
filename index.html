@@ -1629,13 +1629,14 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Changement pour gemini-1.5-flash-latest (plus résilient aux erreurs 404)
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // URL utilisant v1 (plus stable pour les clés API standards)
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
 
+    // Format minimaliste sans options de config qui font souvent planter les requêtes navigateur
     const payload = {
         contents: [{
             parts: [{ 
-                text: sys + "\n\n" + usr 
+                text: sys + "\n\nDemande : " + usr 
             }]
         }]
     };
@@ -1643,13 +1644,16 @@ async function apiCall(sys, usr, isJson = false) {
     try {
         const response = await fetch(url, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            console.error("Erreur API détaillée:", result);
+            console.error("ERREUR GOOGLE API:", result);
             throw new Error(`Erreur ${response.status}`);
         }
 
@@ -1662,9 +1666,9 @@ async function apiCall(sys, usr, isJson = false) {
         throw new Error("Réponse vide");
 
     } catch (err) {
-        console.error("DEBUG:", err);
+        console.error("DÉTAILS DU CRASH:", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Erreur d\'analyse", "score": 50}' : "L'IA est indisponible.";
+        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA ne répond pas. Vérifie que ta clé API est bien active.";
     }
 }
 
@@ -1696,6 +1700,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
