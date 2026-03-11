@@ -703,7 +703,7 @@
     let currentLang = 'fr';
     
     // TA CLÉ API
-    const _c = "QUl6YVN5QXpZM29MY2ZmaC0zU3JVazBVeENIR0N6S3FONFFFZ1Y0";
+    const _c = "QUl6YVN5QW1PUnAwNENIUlBnVUhEM0JTcFpiM3pUajY2dkIzVENN";
     const apiKey = atob(_c);
 
 
@@ -1630,12 +1630,12 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Test avec l'URL de production stable v1 et le modèle flash
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Nouvelle clé rattachée au projet activé
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
-            parts: [{ text: sys + "\n\n" + usr }]
+            parts: [{ text: sys + "\n\nDemande : " + usr }]
         }]
     };
 
@@ -1647,28 +1647,18 @@ async function apiCall(sys, usr, isJson = false) {
 
         const result = await response.json();
 
-        // LOG CRITIQUE : Affiche la réponse exacte de Google dans ta console
-        console.log("RÉPONSE BRUTE GOOGLE :", result);
-
         if (!response.ok) {
-            // Si c'est encore un 404, on tente le modèle "gemini-pro" immédiatement
-            if (response.status === 404) {
-                console.warn("Flash non trouvé, tentative avec gemini-pro...");
-                const backupUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
-                const backupResponse = await fetch(backupUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const backupResult = await backupResponse.json();
-                if (backupResponse.ok) return backupResult.candidates[0].content.parts[0].text;
-            }
-            throw new Error(result.error ? result.error.message : "Erreur API");
+            console.error("Erreur Google Cloud :", result);
+            throw new Error(result.error ? result.error.message : "Erreur");
         }
 
         globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("CRASH FINAL :", err);
+        console.error("Crash :", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Service indisponible", "score": 50}' : "Erreur : " + err.message;
+        return "L'IA est maintenant configurée mais ne répond pas. Vérifie l'activation de l'API dans ton nouveau projet Cloud.";
     }
 }
     function copyPitch() {
@@ -1699,6 +1689,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
