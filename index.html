@@ -1628,16 +1628,15 @@
     // FONCTION API MISE À JOUR POUR FONCTIONNER HORS GEMINI
     // --- FONCTION API CORRIGÉE (URL ET MODÈLE) ---
 async function apiCall(sys, usr, isJson = false) {
-    globalLoader.classList.remove('hidden');
-    
-    // On utilise le modèle flash-latest qui est le plus réactif
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-
-    const payload = {
-        contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
-    };
-
     try {
+        globalLoader.classList.remove('hidden');
+        
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+        const payload = {
+            contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+        };
+
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1646,26 +1645,21 @@ async function apiCall(sys, usr, isJson = false) {
 
         const result = await response.json();
 
-        // Gestion du réveil de l'API (503)
         if (response.status === 503) {
-            globalLoader.classList.add('hidden');
-            return "L'IA finit de s'installer sur votre compte Google... Réessayez dans 30 secondes !";
+            throw new Error("L'API se réveille, réessayez dans 20 secondes.");
         }
 
         if (!response.ok) {
-            console.error("Erreur API:", result);
-            globalLoader.classList.add('hidden');
-            return "Erreur de configuration Google. Vérifiez la console.";
+            throw new Error(result.error ? result.error.message : "Erreur API");
         }
 
-        const generatedText = result.candidates[0].content.parts[0].text;
         globalLoader.classList.add('hidden');
-        return generatedText;
+        return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("Erreur réseau:", err);
-        globalLoader.classList.add('hidden');
-        return "Problème de connexion. Vérifiez votre accès internet.";
+        console.error("Erreur détaillée:", err);
+        if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
+        return isJson ? '{"text": "Erreur", "score": 50}' : "Erreur : " + err.message;
     }
 }
     function copyPitch() {
@@ -1696,6 +1690,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
