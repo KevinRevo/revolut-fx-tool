@@ -1630,18 +1630,19 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // On utilise le nom de modèle le plus stable pour v1beta : gemini-pro
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    // Utilisation du nom de modèle complet requis par la Generative Language API
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
-            parts: [{ text: sys + "\n\nDemande : " + usr }]
+            parts: [{ text: "SYSTEM INSTRUCTIONS: " + sys + "\n\nUSER REQUEST: " + usr }]
         }]
     };
 
     try {
         const response = await fetch(url, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
@@ -1649,12 +1650,12 @@ async function apiCall(sys, usr, isJson = false) {
 
         if (!response.ok) {
             console.error("Détails Erreur Google :", result);
-            // Si gemini-pro n'est pas trouvé, on tente une dernière fois avec gemini-1.5-flash-latest
+            // Si le 404 persiste, c'est que l'API veut la version "gemini-pro"
             if (response.status === 404) {
-                const retryUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-                const retryRes = await fetch(retryUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const retryData = await retryRes.json();
-                if (retryRes.ok) return retryData.candidates[0].content.parts[0].text;
+                const altUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+                const altRes = await fetch(altUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const altData = await altRes.json();
+                if (altRes.ok) return altData.candidates[0].content.parts[0].text;
             }
             throw new Error(result.error ? result.error.message : "Erreur API");
         }
@@ -1663,9 +1664,9 @@ async function apiCall(sys, usr, isJson = false) {
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("Crash définitif :", err);
+        console.error("Crash connexion :", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA est activée mais le modèle n'est pas encore provisionné. Réessaie dans 5 minutes.";
+        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA est prête mais le modèle ne répond pas. Réessaye dans 10 secondes.";
     }
 }
     function copyPitch() {
@@ -1696,6 +1697,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
