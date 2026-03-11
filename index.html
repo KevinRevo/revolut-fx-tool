@@ -1629,20 +1629,15 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // URL STABLE V1
+    // URL STABLE V1 (Celle que tu veux, point final)
     const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-    // On fusionne tout dans 'text' pour éviter le rejet du bloc 'systemInstruction' par le navigateur
+    // On met TOUT dans le texte pour être sûr que Google accepte
     const payload = {
         contents: [{
-            parts: [{ text: "INSTRUCTIONS : " + sys + "\n\nQUESTION : " + usr }]
+            parts: [{ text: "CONSIGNES: " + sys + "\n\nREQUETE: " + usr }]
         }]
     };
-    
-    // On n'ajoute le format JSON que si c'est indispensable pour éviter le 404 sur la V1
-    if (isJson) {
-        payload.generationConfig = { responseMimeType: "application/json" };
-    }
 
     try {
         const response = await fetch(url, {
@@ -1653,7 +1648,7 @@ async function apiCall(sys, usr, isJson = false) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("Erreur API:", errorData);
+            console.error("Détails Erreur API:", errorData);
             throw new Error(`Erreur ${response.status}`);
         }
 
@@ -1663,9 +1658,10 @@ async function apiCall(sys, usr, isJson = false) {
         return generatedText;
 
     } catch (err) {
-        console.error("Erreur détaillée:", err);
+        console.error("Erreur de connexion:", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA est indisponible.";
+        // Si l'analyse de marché (JSON) échoue, on renvoie un objet par défaut pour ne pas crash le code
+        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA ne répond pas, réessayez.";
     }
 }
 
@@ -1697,6 +1693,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
