@@ -1630,37 +1630,34 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Ton URL camouflée et ton modèle stable
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // On utilise le modèle 'gemini-pro', le plus compatible de tous
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
-            parts: [{ text: "INSTRUCTIONS SYSTEME : " + sys + "\n\nREQUÊTE UTILISATEUR : " + usr }]
+            parts: [{ text: sys + "\n\nDEMANDE UTILISATEUR : " + usr }]
         }]
     };
-    
-    if (isJson) {
-        payload.generationConfig = { responseMimeType: "application/json" };
-    }
 
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
-
         const result = await response.json();
-        const generatedText = result.candidates[0].content.parts[0].text;
-        globalLoader.classList.add('hidden');
-        return generatedText;
+
+        if (!response.ok) {
+            console.error("Détails Erreur Google:", result);
+            throw new Error(result.error ? result.error.message : "Erreur Serveur");
+        }
+
+        return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error(err);
+        console.error("Crash définitif :", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA ne répond pas, réessayez.";
+        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA ne répond pas. Vérifie le lien de test (étape 1).";
     }
 }
     function copyPitch() {
@@ -1691,6 +1688,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
