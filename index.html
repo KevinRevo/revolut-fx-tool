@@ -1385,9 +1385,8 @@
             spotIn.classList.remove('opacity-50');
             spotLoader.classList.add('hidden');
             update();
-            // C'est cette ligne qui remet tout en marche automatiquement
             generateMarketBrick();
-            renderUrgencyMatrix();
+            renderUrgencyMatrix(); // Call matrix update when rates update
         }
     }
 
@@ -1555,6 +1554,7 @@
         container.innerHTML = `<div class="brick brick-hook font-medium text-slate-700 leading-relaxed">${text}</div>`;
     }
 
+
     async function generateMarketBrick() {
         const base = pitchBaseIn.value;
         const quoted = pitchQuotedIn.value;
@@ -1564,28 +1564,12 @@
        
         if (base === "UNKNOWN" || quoted === "UNKNOWN") return;
 
+
         container.innerHTML = `<div class="brick brick-market italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['ana-loading']}</div>`;
         if (sentimentCard) {
             sentimentCard.classList.remove('hidden');
             updateSentiment(50, currentLang === 'fr' ? "Analyse..." : "Analyzing...");
         }
-
-        const sysPrompt = `You are a Revolut Business FX expert. Analyze ${base}/${quoted} at ${spot} in ${currentLang}.
-        1. Fast market analysis without financial advice (Max 60 words).
-        2. Sentiment score 0-100 (0 Bearish, 100 Bullish).
-        JSON format: {"text": "analysis", "score": 75}`;
-       
-        try {
-            const response = await apiCall(sysPrompt, `Pair ${base}/${quoted} @ ${spot}.`, true);
-            const data = JSON.parse(response);
-            container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1">Market Analysis (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${data.text}</div></div>`;
-            updateSentiment(data.score);
-            // On relance le calcul pour la phrase d'impact
-            calculateCostOfInaction();
-        } catch (e) {
-            container.innerHTML = `<div class="brick brick-market">Analysis unavailable.</div>`;
-        }
-    }
 
 
         const sysPrompt = `You are a Revolut Business FX expert. Analyze ${base}/${quoted} at ${spot} in ${currentLang}.
@@ -1706,9 +1690,6 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
-
-
-
 
 
 
