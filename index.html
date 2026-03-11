@@ -24,7 +24,7 @@
         .card {
             background: white;
             border-radius: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.F05);
             border: 1px solid #e2e8f0;
             transition: transform 0.2s ease;
         }
@@ -1630,8 +1630,8 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Nouvelle clé rattachée au projet activé
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // On utilise le nom de modèle le plus stable pour v1beta : gemini-pro
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
@@ -1648,17 +1648,24 @@ async function apiCall(sys, usr, isJson = false) {
         const result = await response.json();
 
         if (!response.ok) {
-            console.error("Erreur Google Cloud :", result);
-            throw new Error(result.error ? result.error.message : "Erreur");
+            console.error("Détails Erreur Google :", result);
+            // Si gemini-pro n'est pas trouvé, on tente une dernière fois avec gemini-1.5-flash-latest
+            if (response.status === 404) {
+                const retryUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+                const retryRes = await fetch(retryUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const retryData = await retryRes.json();
+                if (retryRes.ok) return retryData.candidates[0].content.parts[0].text;
+            }
+            throw new Error(result.error ? result.error.message : "Erreur API");
         }
 
         globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("Crash :", err);
+        console.error("Crash définitif :", err);
         globalLoader.classList.add('hidden');
-        return "L'IA est maintenant configurée mais ne répond pas. Vérifie l'activation de l'API dans ton nouveau projet Cloud.";
+        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA est activée mais le modèle n'est pas encore provisionné. Réessaie dans 5 minutes.";
     }
 }
     function copyPitch() {
@@ -1689,6 +1696,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
