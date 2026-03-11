@@ -1,230 +1,284 @@
 ﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Revolut Business - FX Sales Enablement</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolut Business - FX Sales Enablement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
 
-<style>
-    body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #f8fafc;
-    }
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
 
 
-    .card {
-        background: white;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e2e8f0;
-        transition: transform 0.2s ease;
-    }
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease;
+        }
 
 
-    .gradient-text {
-        background: linear-gradient(90deg, #0ea5e9, #6366f1);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+        .gradient-text {
+            background: linear-gradient(90deg, #0ea5e9, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
 
-    .chart-container {
-        position: relative;
-        width: 100%;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        height: 320px;
-        max-height: 400px;
-    }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
 
 
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type=number], input[type=date] {
-        -moz-appearance: textfield;
-        outline: none;
-    }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number], input[type=date] {
+            -moz-appearance: textfield;
+            outline: none;
+        }
 
 
-    select {
-        appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 1em;
-    }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em;
+        }
 
 
-    .mode-toggle {
-        background: #f1f5f9;
-        padding: 4px;
-        border-radius: 12px;
-        display: inline-flex;
-        gap: 4px;
-    }
-    .mode-btn {
-        padding: 6px 16px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        transition: all 0.2s;
-        color: #64748b;
-    }
-    .mode-btn.active {
-        background: white;
-        color: #4f46e5;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+        .mode-toggle {
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            display: inline-flex;
+            gap: 4px;
+        }
+        .mode-btn {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+        .mode-btn.active {
+            background: white;
+            color: #4f46e5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
 
 
-    .nav-tab {
-        border-bottom: 2px solid transparent;
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-    .nav-tab.active {
-        border-bottom-color: #4f46e5;
-        color: #4f46e5;
-    }
-    .page {
-        display: none;
-    }
-    .page.active {
-        display: block;
-        animation: fadeIn 0.4s ease-out;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+        .nav-tab {
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .nav-tab.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
 
-    .sync-loader {
-        animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
+        .sync-loader {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
 
-    .brick {
-        border-left: 4px solid #e2e8f0;
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
-        animation: slideIn 0.3s ease-out;
-    }
-    .brick-hook { border-color: #6366f1; }
-    .brick-market { border-color: #0ea5e9; background: #f0f9ff; padding: 1.25rem; border-radius: 0 1rem 1rem 0; }
-    .brick-competitor { border-color: #f43f5e; background: #fff1f2; padding: 1.25rem; border-radius: 0 1rem 1rem 0; }
+        .brick {
+            border-left: 4px solid #e2e8f0;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        .brick-hook { border-color: #6366f1; }
+        .brick-market { border-color: #0ea5e9; background: #f0f9ff; padding: 1.25rem; border-radius: 0 1rem 1rem 0; }
+        .brick-competitor { border-color: #f43f5e; background: #fff1f2; padding: 1.25rem; border-radius: 0 1rem 1rem 0; }
  
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-10px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
 
-    .tradingview-container {
-        height: 300px;
-        width: 100%;
-        border-radius: 1rem;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-    }
+        .tradingview-container {
+            height: 300px;
+            width: 100%;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
 
 
-    /* Gauge Custom Styles */
-    .sentiment-gauge-container {
-        height: 8px;
-        background: linear-gradient(90deg, #f43f5e 0%, #e2e8f0 50%, #10b981 100%);
-        border-radius: 4px;
-        position: relative;
-    }
-    #sentiment-cursor {
-        position: absolute;
-        top: -4px;
-        left: 50%;
-        width: 16px;
-        height: 16px;
-        background: white;
-        border: 3px solid #1e293b;
-        border-radius: 50%;
-        transform: translateX(-50%);
-        transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+        .sentiment-gauge-container {
+            height: 8px;
+            background: linear-gradient(90deg, #f43f5e 0%, #e2e8f0 50%, #10b981 100%);
+            border-radius: 4px;
+            position: relative;
+        }
+        #sentiment-cursor {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid #1e293b;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
 
-    /* Objection Card flip */
-    .objection-card {
-        perspective: 1000px;
-        cursor: pointer;
-        height: 180px;
-    }
-    .objection-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        transition: transform 0.6s;
-        transform-style: preserve-3d;
-    }
-    .objection-card.flipped .objection-inner {
-        transform: rotateY(180deg);
-    }
-    .objection-front, .objection-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 1.5rem;
-        border-radius: 1.5rem;
-    }
-    .objection-back {
-        transform: rotateY(180deg);
-        background-color: #f0f9ff;
-    }
-</style>
+        .objection-card {
+            perspective: 1000px;
+            cursor: pointer;
+            height: 200px;
+        }
+        .objection-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .objection-card.flipped .objection-inner {
+            transform: rotateY(180deg);
+        }
+        .objection-front, .objection-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+        }
+        .objection-back {
+            transform: rotateY(180deg);
+            background-color: #f0f9ff;
+        }
+
+
+        .trigger-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .trigger-item:hover {
+            background-color: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+
+        .math-box {
+            font-size: 1.2em;
+            padding: 1rem;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 1rem;
+            text-align: center;
+            margin: 0.5rem 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+
+        .term-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .term-card:hover {
+            border-color: #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body class="text-slate-800">
 
 
 <header class="max-w-6xl mx-auto pt-10 px-6">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="text-left flex items-center gap-4">
             <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center shadow-lg shadow-slate-200">
                  <span class="text-white font-black text-xl">R</span>
             </div>
             <div>
                 <h1 class="text-2xl font-black text-slate-900 tracking-tighter">Revolut <span class="gradient-text">Business</span></h1>
-                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">AE FX Live Assistant</p>
+                <p id="app-subtitle" class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">AE FX Live Assistant</p>
             </div>
         </div>
-        <nav class="bg-white px-2 py-1 rounded-2xl border border-slate-200 shadow-sm flex gap-2 overflow-x-auto max-w-full">
-            <button onclick="switchPage('pitch-page')" id="tab-pitch" class="nav-tab active px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
-                <i data-lucide="mic" class="w-4 h-4 text-indigo-500"></i> Discovery & Pitch
-            </button>
-            <button onclick="switchPage('simulator-page')" id="tab-simulator" class="nav-tab px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
-                <i data-lucide="calculator" class="w-4 h-4 text-sky-500"></i> Simulateur
-            </button>
-            <button onclick="switchPage('strategy-page')" id="tab-strategy" class="nav-tab px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
-                <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i> Stratégie & Cheat Sheet
-            </button>
-        </nav>
+        
+        <div class="flex items-center gap-4">
+            <div class="bg-white border border-slate-200 rounded-xl px-2 py-1 flex items-center gap-2 shadow-sm">
+                <i data-lucide="languages" class="w-4 h-4 text-slate-400"></i>
+                <select id="global-language" onchange="switchGlobalLanguage(this.value)" class="bg-transparent border-none outline-none font-black text-[10px] uppercase cursor-pointer text-indigo-600">
+                    <option value="fr" selected>FR</option>
+                    <option value="en">EN</option>
+                </select>
+            </div>
+
+
+            <nav class="bg-white px-2 py-1 rounded-2xl border border-slate-200 shadow-sm flex gap-2 overflow-x-auto max-w-full">
+                <button onclick="switchPage('pitch-page')" id="tab-pitch" class="nav-tab active px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="mic" class="w-4 h-4 text-indigo-500"></i> <span data-i18n="nav-pitch">Discovery & Pitch</span>
+                </button>
+                <button onclick="switchPage('simulator-page')" id="tab-simulator" class="nav-tab px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="calculator" class="w-4 h-4 text-sky-500"></i> <span data-i18n="nav-simulator">Simulateur</span>
+                </button>
+                <button onclick="switchPage('strategy-page')" id="tab-strategy" class="nav-tab px-4 md:px-6 py-3 font-bold text-xs md:text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i> <span data-i18n="nav-strategy">Stratégie & Cheat Sheet</span>
+                </button>
+            </nav>
+        </div>
     </div>
 </header>
 
@@ -232,58 +286,46 @@
 <main class="max-w-6xl mx-auto p-6 pb-20">
 
 
-    <!-- PAGE 1: PITCH -->
     <div id="pitch-page" class="page active space-y-8">
+        
+        <div id="urgency-matrix-container" class="bg-amber-50 rounded-2xl p-6 border border-amber-200 hidden shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-xs font-black uppercase text-amber-700 tracking-widest flex items-center gap-3">
+                    <i data-lucide="globe" class="w-5 h-5 text-amber-500"></i> 
+                    <span data-i18n="urgency-matrix-title">Aperçu Macroéconomique</span>
+                </h4>
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] bg-white border border-amber-200 text-amber-800 px-2 py-1 rounded-full font-bold">MARS 2026</span>
+                    <span class="text-[9px] bg-amber-500 text-white px-2 py-1 rounded-full font-bold animate-pulse">LIVE UPDATES</span>
+                </div>
+            </div>
+            <div id="urgency-matrix-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+        </div>
+
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
          
             <div class="lg:col-span-4 space-y-6">
-                <!-- Section Discovery Client -->
                 <div class="card p-6 border-t-4 border-indigo-600">
                     <div class="flex justify-between items-center mb-6">
                       <h3 class="text-lg font-bold flex items-center gap-2">
                           <i data-lucide="search" class="w-5 h-5 text-indigo-600"></i>
-                          Discovery Client
+                          <span data-i18n="discovery-title">Discovery Client</span>
                       </h3>
-                      <select id="pitch-language" class="bg-slate-100 border-none rounded-lg px-2 py-1 text-[10px] font-black uppercase text-indigo-600 outline-none cursor-pointer hover:bg-slate-200 transition-colors">
-                          <option value="Français" selected>FR</option>
-                          <option value="English">EN</option>
-                          <option value="Deutsch">DE</option>
-                      </select>
                     </div>
                  
                     <div class="space-y-5">
                         <div>
-                            <label class="block text-[10px] font-black uppercase text-slate-500 mb-2 tracking-widest">Secteur (Ciblage AE)</label>
+                            <label data-i18n="label-industry" class="block text-[10px] font-black uppercase text-slate-500 mb-2 tracking-widest">Secteur (Ciblage AE)</label>
                             <select id="client-industry" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500">
-                                <optgroup label="Core Industries">
-                                    <option value="Import / Export">Import / Export</option>
-                                    <option value="Pharma / Santé">Pharma / Santé</option>
-                                    <option value="Luxe / Retail">Luxe / Retail</option>
-                                    <option value="Optique / Packaging">Optique / Packaging</option>
-                                </optgroup>
-                                <optgroup label="Digital & Services">
-                                    <option value="SaaS companies">SaaS companies (Cloud/CRM spend)</option>
-                                    <option value="Tech Startups (US VCs)">Tech Startups (funded by US VCs)</option>
-                                    <option value="Marketing Agencies">Marketing Agencies (Ads/Remote clients)</option>
-                                    <option value="Global Recruitment">Global Recruitment (Intl salaries/offices)</option>
-                                </optgroup>
-                                <optgroup label="Logistique & Wholesale">
-                                    <option value="Travel / Tourisme">Travel / Tourisme (Hotels/Supplier FX)</option>
-                                    <option value="Food & Drink wholesale">Food & Drink wholesale (Bulk sales/FXF)</option>
-                                    <option value="Industrie Manufacturière">Industrie Manufacturière</option>
-                                </optgroup>
-                                <optgroup label="Banking & Professional">
-                                    <option value="Property Investment">Property Investment (Portfolio/Inter-company)</option>
-                                    <option value="Insurance Firms">Insurance Firms (Claims/Billpay)</option>
-                                    <option value="Financial Services">Financial Services (Outsourced backoffice)</option>
-                                </optgroup>
-                            </select>
+                                </select>
                         </div>
 
 
                         <button onclick="generateInitialHook()" class="w-full bg-black hover:bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
                             <i data-lucide="play" class="w-5 h-5 text-emerald-400"></i>
-                            Approche Secteur
+                            <span data-i18n="btn-generate-hook">Approche Secteur</span>
                         </button>
 
 
@@ -291,10 +333,10 @@
 
 
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                            <label class="block text-[10px] font-black uppercase text-slate-500 tracking-widest italic">Pendant l'échange :</label>
+                            <label data-i18n="label-during-call" class="block text-[10px] font-black uppercase text-slate-500 tracking-widest italic">Pendant l'échange :</label>
                          
                             <div class="space-y-1">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase">Paire mentionnée</label>
+                                <label data-i18n="label-pair" class="text-[9px] font-bold text-slate-400 uppercase">Paire mentionnée</label>
                                 <div class="flex items-center gap-2">
                                     <select id="pitch-base" class="currency-selector flex-1 bg-white border border-slate-200 rounded-lg px-2 py-2 font-bold text-slate-900 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
                                         <option value="UNKNOWN">-- Paire --</option>
@@ -315,24 +357,19 @@
                             </div>
                          
                             <div class="space-y-1">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase">Concurrent actuel</label>
+                                <label data-i18n="label-competitor" class="text-[9px] font-bold text-slate-400 uppercase">Concurrent actuel</label>
                                 <select id="competitor" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500">
-                                    <option value="Inconnu">-- Non renseigné --</option>
-                                    <option value="Banque traditionnelle">Banque traditionnelle</option>
-                                    <option value="Wise">Wise</option>
-                                    <option value="Autre Broker">Autre Broker</option>
-                                </select>
+                                    </select>
                             </div>
                         </div>
                     </div>
                 </div>
 
 
-                <!-- Section Sentiment de Marché -->
                 <div id="sentiment-card" class="card p-5 hidden animate-in fade-in duration-500">
                     <div class="flex items-center justify-between mb-4">
                        <h4 class="text-[10px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-2">
-                           <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-indigo-500"></i> Sentiment de Marché
+                           <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-indigo-500"></i> <span data-i18n="sentiment-title">Sentiment de Marché</span>
                        </h4>
                        <span id="sentiment-text" class="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase">Analyse...</span>
                     </div>
@@ -340,17 +377,16 @@
                         <div id="sentiment-cursor"></div>
                     </div>
                     <div class="flex justify-between text-[8px] font-black text-slate-400 uppercase tracking-tighter">
-                        <span class="text-rose-500">Bearish</span>
-                        <span>Neutre</span>
-                        <span class="text-emerald-500">Bullish</span>
+                        <span data-i18n="sent-bearish" class="text-rose-500">Bearish</span>
+                        <span data-i18n="sent-neutral">Neutre</span>
+                        <span data-i18n="sent-bullish" class="text-emerald-500">Bullish</span>
                     </div>
                 </div>
 
 
-                <!-- Widget TradingView -->
                 <div class="card p-4">
                     <h4 class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-3 flex items-center gap-2">
-                        <i data-lucide="trending-up" class="w-3 h-3 text-emerald-500"></i> Graphique Live
+                        <i data-lucide="trending-up" class="w-3 h-3 text-emerald-500"></i> <span data-i18n="live-chart">Graphique Live</span>
                     </h4>
                     <div id="tv-widget-container" class="tradingview-container">
                         <iframe id="tv-iframe" src="https://s.tradingview.com/widgetembed/?symbol=FX_IDC:EURUSD&interval=D&theme=light&style=1&locale=fr" style="width: 100%; height: 100%; border: none;"></iframe>
@@ -369,12 +405,12 @@
                     <div class="bg-slate-50 px-8 py-4 border-b border-slate-100 flex justify-between items-center">
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 tracking-wider">Assistant Live AE</span>
+                            <span data-i18n="assistant-badge" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 tracking-wider">Assistant Live AE</span>
                         </div>
                         <div class="flex gap-2">
-                             <button onclick="resetPitch()" class="bg-white border border-slate-200 px-3 py-2 rounded-xl text-slate-400 hover:text-rose-500 transition-colors text-[10px] font-black">RESET</button>
+                             <button onclick="resetPitch()" data-i18n="btn-reset" class="bg-white border border-slate-200 px-3 py-2 rounded-xl text-slate-400 hover:text-rose-500 transition-colors text-[10px] font-black">RESET</button>
                              <button onclick="copyPitch()" class="bg-black text-white px-4 py-2 rounded-xl hover:bg-indigo-600 transition-all flex items-center gap-2 text-[10px] font-black shadow-sm">
-                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPIER LE PITCH
+                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span data-i18n="btn-copy">COPIER LE PITCH</span>
                              </button>
                         </div>
                     </div>
@@ -383,15 +419,14 @@
                         <div id="empty-state" class="flex flex-col items-center justify-center h-full text-center space-y-6 opacity-30">
                             <i data-lucide="volume-2" class="w-16 h-16 text-slate-400"></i>
                             <div>
-                                <p class="text-xl font-black text-slate-900 tracking-tighter">Discovery & Argumentation</p>
-                                <p class="text-sm font-medium">Les briques apparaîtront au fur et à mesure de vos découvertes.</p>
+                                <p data-i18n="empty-title" class="text-xl font-black text-slate-900 tracking-tighter">Discovery & Argumentation</p>
+                                <p data-i18n="empty-desc" class="text-sm font-medium">Les briques apparaîtront au fur et à mesure de vos découvertes.</p>
                             </div>
                         </div>
                         <div id="brick-container-hook"></div>
                         <div id="brick-container-market"></div>
                         <div id="brick-container-competitor"></div>
                       
-                        <!-- Calculateur de Coût de l'Inaction -->
                         <div id="cost-inaction-card" class="hidden mt-8 pt-8 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
                            <div class="bg-indigo-50 rounded-2xl p-6 border border-indigo-100 shadow-sm">
                               <div class="flex items-center justify-between mb-8">
@@ -400,25 +435,25 @@
                                           <i data-lucide="alert-triangle" class="w-4 h-4 text-white"></i>
                                       </div>
                                       <div>
-                                          <h4 class="font-bold text-indigo-900 text-sm">Aide à la Décision</h4>
-                                          <p class="text-[8px] font-black uppercase text-indigo-400 tracking-tighter">Simulation Interactive de Volatilité</p>
+                                          <h4 data-i18n="cia-title" class="font-bold text-indigo-900 text-sm">Aide à la Décision</h4>
+                                          <p data-i18n="cia-subtitle" class="text-[8px] font-black uppercase text-indigo-400 tracking-tighter">Simulation Interactive de Volatilité</p>
                                       </div>
                                   </div>
-                                  <span class="text-[9px] font-black uppercase text-indigo-400 bg-white px-2 py-1 rounded-full border border-indigo-100">Modèle de Risque</span>
+                                  <span data-i18n="risk-model" class="text-[9px] font-black uppercase text-indigo-400 bg-white px-2 py-1 rounded-full border border-indigo-100">Modèle de Risque</span>
                               </div>
 
 
                               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                   <div class="space-y-6">
                                       <div>
-                                          <label class="block text-[10px] font-black uppercase text-indigo-400 mb-2 tracking-widest">Volume Annuel Estimé (<span class="client-base-symbol">€</span>)</label>
+                                          <label class="block text-[10px] font-black uppercase text-indigo-400 mb-2 tracking-widest"><span data-i18n="vol-label">Volume Annuel Estimé</span> (<span class="client-base-symbol">€</span>)</label>
                                           <div class="relative">
                                               <input type="number" id="annual-volume" placeholder="Ex: 1000000" class="w-full bg-white border border-indigo-200 rounded-xl px-4 py-3 font-bold text-indigo-900 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm pr-12 transition-all">
                                               <span class="absolute right-4 top-3.5 font-bold text-indigo-300 client-base-symbol">€</span>
                                           </div>
                                       </div>
                                       <div>
-                                          <label class="block text-[10px] font-black uppercase text-indigo-400 mb-2 tracking-widest">Variation Adverse à Simuler (%)</label>
+                                          <label data-i18n="volat-label" class="block text-[10px] font-black uppercase text-indigo-400 mb-2 tracking-widest">Variation Adverse à Simuler (%)</label>
                                           <div class="relative">
                                               <input type="number" id="volatility-pct" value="2" step="0.5" min="0.1" class="w-full bg-white border border-indigo-200 rounded-xl px-4 py-3 font-bold text-indigo-900 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm pr-12 transition-all">
                                               <span class="absolute right-4 top-3.5 font-bold text-indigo-300">%</span>
@@ -429,17 +464,16 @@
 
                                   <div class="bg-white p-6 rounded-2xl border border-indigo-100 shadow-sm relative overflow-hidden flex flex-col justify-center items-center text-center">
                                       <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"></div>
-                                      <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Cours Dégradé Estimé</p>
+                                      <p data-i18n="degraded-rate-label" class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Cours Dégradé Estimé</p>
                                       <p id="custom-rate-result" class="text-3xl font-mono font-black text-indigo-600 mb-6">0.0000</p>
-                                      <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Érosion Potentielle de Marge</p>
+                                      <p data-i18n="margin-erosion-label" class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Érosion Potentielle de Marge</p>
                                       <p id="custom-loss-result" class="text-3xl font-black text-rose-600">- 0 €</p>
                                   </div>
                               </div>
 
 
                               <div id="impact-phrase" class="text-[11px] text-indigo-600 mt-8 p-4 bg-white/80 rounded-xl border border-dashed border-indigo-200 italic font-semibold leading-relaxed shadow-inner">
-                                  Saisissez un volume pour générer l'argumentaire personnalisé.
-                              </div>
+                                  </div>
                            </div>
                         </div>
                     </div>
@@ -448,7 +482,7 @@
                         <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shrink-0 shadow-lg">
                             <i data-lucide="check-circle" class="w-4 h-4 text-white"></i>
                         </div>
-                        <p class="text-[10px] font-bold text-slate-400 leading-relaxed uppercase tracking-wide">
+                        <p data-i18n="footer-remind" class="text-[10px] font-bold text-slate-400 leading-relaxed uppercase tracking-wide">
                             Rappel : Focus sur le taux interbancaire réel et la sécurisation stratégique des marges via le FXF.
                         </p>
                     </div>
@@ -458,21 +492,20 @@
     </div>
 
 
-    <!-- PAGE 2: SIMULATEUR -->
     <div id="simulator-page" class="page space-y-12">
         <section id="simulator" class="card p-8 md:p-12 shadow-xl border-t-4 border-sky-500 text-slate-900">
             <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold mb-2 text-slate-900 text-balance">Simulateur de Taux Forward</h2>
+                <h2 data-i18n="sim-title" class="text-3xl font-bold mb-2 text-slate-900 text-balance">Simulateur de Taux Forward</h2>
                 <div class="mode-toggle mt-4">
-                    <button onclick="setMode('fixed')" id="mode-fixed" class="mode-btn active">Date Fixe</button>
-                    <button onclick="setMode('flexible')" id="mode-flexible" class="mode-btn">Flexible</button>
+                    <button onclick="setMode('fixed')" id="mode-fixed" class="mode-btn active" data-i18n="mode-fixed">Date Fixe</button>
+                    <button onclick="setMode('flexible')" id="mode-flexible" class="mode-btn" data-i18n="mode-flex">Flexible</button>
                 </div>
             </div>
 
 
             <div class="max-w-xl mx-auto mb-10 bg-slate-50 p-4 rounded-2xl border border-slate-200 flex items-center gap-4 shadow-inner">
                 <div class="flex-1 space-y-1">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Devise de base</label>
+                    <label data-i18n="base-curr-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Devise de base</label>
                     <select id="baseCurrency" class="currency-selector w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
@@ -484,7 +517,7 @@
                     <i data-lucide="repeat" class="w-5 h-5 text-indigo-600 transition-transform"></i>
                 </button>
                 <div class="flex-1 space-y-1">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Devise de contrepartie</label>
+                    <label data-i18n="quoted-curr-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Devise de contrepartie</label>
                     <select id="quotedCurrency" class="currency-selector w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 shadow-sm focus:ring-2 focus:ring-indigo-500">
                         <option value="EUR">EUR</option>
                         <option value="USD" selected>USD</option>
@@ -499,7 +532,7 @@
                 <div class="lg:col-span-4 space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div class="space-y-5">
                         <div class="relative">
-                            <label class="block text-sm font-bold text-slate-800 mb-2" id="label-spot-text">Cours Spot</label>
+                            <label class="block text-sm font-bold text-slate-800 mb-2" id="label-spot-text"><span data-i18n="spot-rate-label">Cours Spot</span></label>
                             <div class="relative flex items-center">
                                 <input type="number" id="spotIn" step="0.0001" value="1.2816" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 font-mono text-lg text-sky-600 font-bold focus:ring-2 focus:ring-sky-500 outline-none border-b-4 border-b-sky-100 transition-all pr-12">
                                 <div id="spot-loading" class="absolute right-4 hidden">
@@ -509,21 +542,21 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-2 uppercase text-nowrap">Taux <span id="label-rb-input">CHF</span> (%)</label>
+                                <label class="block text-[11px] font-bold text-slate-800 mb-2 uppercase text-nowrap"><span data-i18n="rate-short">Taux</span> <span id="label-rb-input">CHF</span> (%)</label>
                                 <input type="number" id="eurRateIn" step="0.01" value="0.00" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 font-mono text-indigo-600 font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-2 uppercase text-nowrap">Taux <span id="label-rq-input">USD</span> (%)</label>
+                                <label class="block text-[11px] font-bold text-slate-800 mb-2 uppercase text-nowrap"><span data-i18n="rate-short">Taux</span> <span id="label-rq-input">USD</span> (%)</label>
                                 <input type="number" id="usdRateIn" step="0.01" value="3.75" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 font-mono text-emerald-600 font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 gap-4 pt-2">
                             <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-2">Date de début</label>
+                                <label data-i18n="start-date" class="block text-sm font-bold text-slate-800 mb-2">Date de début</label>
                                 <input type="date" id="startDate" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 font-mono text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all border-b-4 border-b-slate-100">
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-2">Échéance</label>
+                                <label data-i18n="end-date" class="block text-sm font-bold text-slate-800 mb-2">Échéance</label>
                                 <input type="date" id="endDate" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 font-mono text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all border-b-4 border-b-slate-100">
                             </div>
                         </div>
@@ -537,13 +570,13 @@
                 </div>
                 <div class="lg:col-span-8 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex-grow">
-                        <h4 class="text-center font-bold text-slate-700 uppercase text-[10px] mb-6 tracking-widest" id="chart-title">Visualisation Taux</h4>
+                        <h4 class="text-center font-bold text-slate-700 uppercase text-[10px] mb-6 tracking-widest" id="chart-title" data-i18n="chart-viz">Visualisation Taux</h4>
                         <div class="chart-container"><canvas id="dynamicChart"></canvas></div>
                     </div>
                     <div class="bg-white rounded-2xl p-6 shadow-xl border border-sky-100 text-center relative overflow-hidden flex flex-col items-center justify-center transition-all hover:shadow-2xl">
                         <div class="absolute inset-0 bg-gradient-to-b from-sky-50/30 to-transparent pointer-events-none"></div>
                         <div class="relative z-10 text-center">
-                            <span class="text-slate-900 text-[10px] font-black uppercase tracking-[0.3em] mb-2 block">Taux Garanti <span id="label-pair-final">CHF/USD</span></span>
+                            <span class="text-slate-900 text-[10px] font-black uppercase tracking-[0.3em] mb-2 block"><span data-i18n="guaranteed-rate">Taux Garanti</span> <span id="label-pair-final">CHF/USD</span></span>
                             <span id="finalRate" class="text-4xl md:text-5xl font-extrabold tracking-tighter gradient-text leading-tight block">1.2624</span>
                         </div>
                     </div>
@@ -553,169 +586,107 @@
     </div>
 
 
-    <!-- PAGE 3: STRATÉGIE & CHEAT SHEET -->
     <div id="strategy-page" class="page space-y-12">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Section 0: Le But -->
             <div class="card p-8 border-t-4 border-amber-500">
                 <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
                     <i data-lucide="target" class="w-6 h-6 text-amber-600"></i>
                 </div>
-                <h3 class="text-xl font-black text-slate-900 mb-4">0. Le But de l'Appel</h3>
-                <p class="text-sm font-bold text-amber-600 uppercase tracking-widest mb-4 italic">Vendre le meeting avec l'expert</p>
-                <p class="text-sm leading-relaxed text-slate-600 mb-6">
+                <h3 data-i18n="strat-goal-title" class="text-xl font-black text-slate-900 mb-4">0. Le But de l'Appel</h3>
+                <p data-i18n="strat-goal-subtitle" class="text-sm font-bold text-amber-600 uppercase tracking-widest mb-4 italic">Vendre le meeting avec l'expert</p>
+                <p data-i18n="strat-goal-desc" class="text-sm leading-relaxed text-slate-600 mb-6">
                     Le but n'est pas de vendre directement le Forward mais de vendre l'expertise et de caler un meeting avec un <strong>PSE</strong>.
                 </p>
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <p class="text-[10px] font-black uppercase text-slate-400 mb-2">Pitch de base :</p>
-                    <p class="text-xs font-bold italic leading-relaxed">"Un contrat de change à terme vous permet de bloquer un taux pour vos transactions futures et ainsi protéger vos marges commerciales."</p>
+                    <p data-i18n="strat-base-pitch-label" class="text-[10px] font-black uppercase text-slate-400 mb-2">Pitch de base :</p>
+                    <p data-i18n="strat-base-pitch-text" class="text-xs font-bold italic leading-relaxed">"Un contrat de change à terme vous permet de bloquer un taux pour vos transactions futures et ainsi protéger vos marges commerciales."</p>
                 </div>
             </div>
 
 
-            <!-- Section 1: Qualification -->
             <div class="card p-8 border-t-4 border-emerald-500">
                 <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-6">
                     <i data-lucide="check-square" class="w-6 h-6 text-emerald-600"></i>
                 </div>
-                <h3 class="text-xl font-black text-slate-900 mb-4">1. Checklist Qualification</h3>
-                <ul class="space-y-4">
-                    <li class="flex items-start gap-3">
-                        <div class="mt-1 w-4 h-4 rounded bg-emerald-100 flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3 text-emerald-600"></i></div>
-                        <div class="text-xs leading-relaxed">
-                            <span class="font-bold">Devises :</span> Doit impliquer au moins une devise du <span class="text-emerald-600 font-bold">Big 3 (EUR / USD / GBP)</span>.
-                            <div class="mt-1 p-2 bg-slate-50 rounded border border-dashed border-slate-200 italic text-[10px]">
-                                Ex: EUR/CHF ou USD/HUF est possible, mais pas CHF/PLN.
-                            </div>
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <div class="mt-1 w-4 h-4 rounded bg-emerald-100 flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3 text-emerald-600"></i></div>
-                        <div class="text-xs">
-                            <span class="font-bold">Visibilité :</span> Le client doit avoir une fourchette de flux FX annuelle estimée.
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <div class="mt-1 w-4 h-4 rounded bg-emerald-100 flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3 text-emerald-600"></i></div>
-                        <div class="text-xs">
-                            <span class="font-bold">Éducation :</span> Nouveau sur le produit ? Simple à convaincre. Déjà utilisateur ? Comprendre l'expérience passée.
-                        </div>
-                    </li>
-                </ul>
+                <h3 data-i18n="strat-qual-title" class="text-xl font-black text-slate-900 mb-4">1. Checklist Qualification</h3>
+                <ul id="strat-qual-list" class="space-y-4">
+                    </ul>
             </div>
 
 
-            <!-- Section 3: Revolut Edge -->
             <div class="card p-8 border-t-4 border-indigo-600">
                 <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-6">
                     <i data-lucide="zap" class="w-6 h-6 text-indigo-600"></i>
                 </div>
-                <h3 class="text-xl font-black text-slate-900 mb-4">3. L'avantage Revolut</h3>
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-[10px] font-black text-indigo-600 uppercase mb-1">Rapidité & Autonomie</p>
-                        <p class="text-xs text-slate-600 italic">"Bookez vous-même en quelques clics sans passer d'appel téléphonique opaque."</p>
+                <h3 data-i18n="strat-edge-title" class="text-xl font-black text-slate-900 mb-4">3. L'avantage Revolut</h3>
+                <div id="strat-edge-list" class="space-y-4">
                     </div>
-                    <div>
-                        <p class="text-[10px] font-black text-indigo-600 uppercase mb-1">Transparence Totale</p>
-                        <p class="text-xs text-slate-600 italic">"Pas de frais cachés. Les coûts sont annoncés avant la validation."</p>
+            </div>
+        </div>
+
+
+        <div class="card p-8 border-t-4 border-slate-900 bg-slate-50 shadow-lg">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h3 data-i18n="strat-terms-title" class="text-xl font-black text-slate-900 uppercase tracking-tighter">Conditions & Devises</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cadre contractuel standard</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="strat-terms-list">
                     </div>
-                    <div>
-                        <p class="text-[10px] font-black text-indigo-600 uppercase mb-1">Proximité</p>
-                        <p class="text-xs text-slate-600 italic">"Accès direct à votre AE et PSE pour un suivi stratégique."</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-indigo-600 p-6 rounded-2xl text-white shadow-xl relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12">
+                            <i data-lucide="globe" class="w-24 h-24"></i>
+                        </div>
+                        <h4 class="text-xs font-black uppercase mb-4 tracking-widest text-indigo-200 flex items-center gap-2">
+                             <i data-lucide="globe" class="w-3.5 h-3.5"></i> Devises Forward
+                        </h4>
+                        <div class="flex flex-wrap gap-2 mb-6" id="strat-curr-list">
+                            </div>
+                        <div class="p-4 bg-indigo-700/50 rounded-xl border border-indigo-400/30 backdrop-blur-sm">
+                            <p class="text-[11px] font-bold leading-relaxed text-indigo-50">
+                                <span class="text-amber-400">Règle impérative :</span> La paire doit inclure au moins une devise du <span class="underline">Big 3</span> (EUR, USD, GBP).
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
 
-        <!-- Section 2: Objections interactives -->
         <section class="space-y-6">
             <h3 class="text-2xl font-black text-slate-900 flex items-center gap-3">
-                <i data-lucide="message-square" class="w-6 h-6 text-rose-500"></i> Traitement d'Objections (Cliquez pour la réponse)
+                <i data-lucide="message-square" class="w-6 h-6 text-rose-500"></i> <span data-i18n="strat-obj-title">Traitement d'Objections (Cliquez pour la réponse)</span>
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Objection 1 -->
-                <div class="objection-card" onclick="this.classList.toggle('flipped')">
-                    <div class="objection-inner">
-                        <div class="objection-front card shadow-md border-rose-100">
-                            <p class="text-rose-500 font-black text-[10px] uppercase mb-2">Objection 1</p>
-                            <p class="font-bold text-slate-900">"Et si le cours s'améliore dans 6 mois ? Je vais perdre de l'argent."</p>
-                            <p class="mt-4 text-[10px] text-slate-400 animate-pulse uppercase">Cliquer pour la solution</p>
-                        </div>
-                        <div class="objection-back card shadow-lg border-emerald-100">
-                            <p class="text-emerald-600 font-black text-[10px] uppercase mb-2">Réponse : Règle des 50%</p>
-                            <p class="text-xs leading-relaxed text-slate-700 italic">"On protège 50% de vos besoins annuels. Si le marché s'améliore, vous utilisez du spot pour l'autre moitié. C'est un outil de protection, pas de spéculation."</p>
-                        </div>
-                    </div>
+            <div id="objections-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 </div>
-                <!-- Objection 2 -->
-                <div class="objection-card" onclick="this.classList.toggle('flipped')">
-                    <div class="objection-inner">
-                        <div class="objection-front card shadow-md border-rose-100">
-                            <p class="text-rose-500 font-black text-[10px] uppercase mb-2">Objection 2</p>
-                            <p class="font-bold text-slate-900">"Oui mais c'est du casino..."</p>
-                            <p class="mt-4 text-[10px] text-slate-400 animate-pulse uppercase">Cliquer pour la solution</p>
-                        </div>
-                        <div class="objection-back card shadow-lg border-emerald-100">
-                            <p class="text-emerald-600 font-black text-[10px] uppercase mb-2">Réponse : Budget & Marge</p>
-                            <p class="text-xs leading-relaxed text-slate-700 italic">"L'idée n'est pas de deviner le futur, mais de savoir exactement combien votre marchandise va vous coûter aujourd'hui pour sécuriser votre profit."</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Objection 3 -->
-                <div class="objection-card" onclick="this.classList.toggle('flipped')">
-                    <div class="objection-inner">
-                        <div class="objection-front card shadow-md border-rose-100">
-                            <p class="text-rose-500 font-black text-[10px] uppercase mb-2">Objection 3</p>
-                            <p class="font-bold text-slate-900">"Je n'ai pas la trésorerie pour bloquer de l'argent maintenant."</p>
-                            <p class="mt-4 text-[10px] text-slate-400 animate-pulse uppercase">Cliquer pour la solution</p>
-                        </div>
-                        <div class="objection-back card shadow-lg border-emerald-100">
-                            <p class="text-emerald-600 font-black text-[10px] uppercase mb-2">Réponse : Dépôt Flexible</p>
-                            <p class="text-xs leading-relaxed text-slate-700 italic">"Ce n'est pas la somme totale, mais une fraction (10% CHF, 5% autres). On peut même optimiser selon vos bilans."</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Objection 4 -->
-                <div class="objection-card" onclick="this.classList.toggle('flipped')">
-                    <div class="objection-inner">
-                        <div class="objection-front card shadow-md border-rose-100">
-                            <p class="text-rose-500 font-black text-[10px] uppercase mb-2">Objection 4</p>
-                            <p class="font-bold text-slate-900">"Les frais sont trop élevés..."</p>
-                            <p class="mt-4 text-[10px] text-slate-400 animate-pulse uppercase">Cliquer pour la solution</p>
-                        </div>
-                        <div class="objection-back card shadow-lg border-emerald-100">
-                            <p class="text-emerald-600 font-black text-[10px] uppercase mb-2">Réponse : Coût de Prévention</p>
-                            <p class="text-xs leading-relaxed text-slate-700 italic">"La protection de marge a un coût, mais une baisse de 10% du cours vous coûtera infiniment plus cher. Le FXF est une assurance."</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
 
-        <!-- Section 4: Questions de Discovery -->
         <div class="card p-8 bg-slate-900 text-white">
             <div class="flex items-center gap-3 mb-6">
                 <i data-lucide="help-circle" class="w-6 h-6 text-sky-400"></i>
-                <h3 class="text-xl font-black">4. Questions Clés de Discovery</h3>
+                <h3 data-i18n="strat-disc-title" class="text-xl font-black">4. Questions Clés de Discovery</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 rounded-xl border border-slate-700 bg-slate-800/50">
-                    <p class="text-sm font-bold italic">"Comment gérez-vous actuellement votre change de devise ?"</p>
+            <div id="strat-disc-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 </div>
-                <div class="p-4 rounded-xl border border-slate-700 bg-slate-800/50">
-                    <p class="text-sm font-bold italic">"Comment est-ce que vous vous protégez de la volatilité du marché ?"</p>
-                </div>
-                <div class="p-4 rounded-xl border border-slate-700 bg-slate-800/50">
-                    <p class="text-sm font-bold italic">"Est-ce que votre marge commerciale est impactée si le cours bouge de 5% ?"</p>
-                </div>
-                <div class="p-4 rounded-xl border border-slate-700 bg-slate-800/50">
-                    <p class="text-sm font-bold italic">"Avez-vous une visibilité sur vos paiements fournisseurs pour les 6 prochains mois ?"</p>
-                </div>
-            </div>
         </div>
+
+
+        <section class="space-y-6">
+            <h3 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                <i data-lucide="book" class="w-6 h-6 text-indigo-500"></i> <span data-i18n="strat-dict-title">Notions Essentielles</span>
+            </h3>
+            <div id="strat-dict-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+        </section>
     </div>
 </main>
 
@@ -729,9 +700,13 @@
 
 
     let currentMode = 'fixed';
-    const apiKey = "AIzaSyBFASiW8Smf9Ja2tdSUkMeRYWbcLpdeidM";
+    let currentLang = 'fr';
+    
+    // TA CLÉ API
+    const apiKey = "AIzaSyDTprW1R2-gHsajAdNqLwVYmSWvPXFrPEU";
 
 
+    // DOM references
     const baseCurrencyIn = document.getElementById('baseCurrency');
     const quotedCurrencyIn = document.getElementById('quotedCurrency');
     const pitchBaseIn = document.getElementById('pitch-base');
@@ -751,12 +726,547 @@
     const spotLoader = document.getElementById('spot-loading');
     const globalLoader = document.getElementById('global-mini-loader');
     const tvIframe = document.getElementById('tv-iframe');
-    const pitchLangIn = document.getElementById('pitch-language');
     const annualVolumeIn = document.getElementById('annual-volume');
     const volatilityPctIn = document.getElementById('volatility-pct');
 
 
+    // Matrix References
+    const matrixContainer = document.getElementById('urgency-matrix-container');
+    const matrixList = document.getElementById('urgency-matrix-list');
+
+
     let dynamicChartInstance = null;
+
+
+    const i18n = {
+        fr: {
+            "nav-pitch": "Discovery & Pitch",
+            "nav-simulator": "Simulateur",
+            "nav-strategy": "Stratégie & Cheat Sheet",
+            "discovery-title": "Discovery Client",
+            "label-industry": "Secteur (Ciblage AE)",
+            "btn-generate-hook": "Approche Secteur",
+            "label-during-call": "Pendant l'échange :",
+            "label-pair": "Paire mentionnée",
+            "label-competitor": "Concurrent actuel",
+            "sentiment-title": "Sentiment de Marché",
+            "sent-bearish": "Baissier",
+            "sent-neutral": "Neutre",
+            "sent-bullish": "Haussier",
+            "live-chart": "Graphique Live",
+            "assistant-badge": "Assistant Live AE",
+            "btn-reset": "RESET",
+            "btn-copy": "COPIER LE PITCH",
+            "empty-title": "Discovery & Argumentation",
+            "empty-desc": "Les briques apparaîtront au fur et à mesure de vos découvertes.",
+            "cia-title": "Aide à la Décision",
+            "cia-subtitle": "Simulation Interactive de Volatilité",
+            "risk-model": "Modèle de Risque",
+            "vol-label": "Volume Annuel Estimé",
+            "volat-label": "Variation Adverse à Simuler (%)",
+            "degraded-rate-label": "Cours Dégradé Estimé",
+            "margin-erosion-label": "Érosion Potentielle de Marge",
+            "footer-remind": "Rappel : Focus sur le taux interbancaire réel et la sécurisation stratégique des marges via le FXF.",
+            "sim-title": "Simulateur de Taux Forward",
+            "mode-fixed": "Date Fixe",
+            "mode-flex": "Flexible",
+            "base-curr-label": "Devise de base",
+            "quoted-curr-label": "Devise de contrepartie",
+            "spot-rate-label": "Cours Spot",
+            "rate-short": "Taux",
+            "start-date": "Date de début",
+            "end-date": "Échéance",
+            "chart-viz": "Visualisation Taux",
+            "guaranteed-rate": "Taux Garanti",
+            "strat-goal-title": "0. Le But de l'Appel",
+            "strat-goal-subtitle": "Vendre le meeting avec l'expert",
+            "strat-goal-desc": "Le but n'est pas de vendre directement le Forward mais de vendre l'expertise et de caler un meeting avec un <strong>PSE</strong>.",
+            "strat-base-pitch-label": "Pitch de base :",
+            "strat-base-pitch-text": "\"Un contrat de change à terme vous permet de bloquer un taux pour vos transactions futures et ainsi protéger vos marges commerciales.\"",
+            "strat-qual-title": "1. Checklist Qualification",
+            "strat-edge-title": "3. L'avantage Revolut",
+            "strat-obj-title": "Traitement d'Objections (Cliquez pour la réponse)",
+            "strat-disc-title": "4. Questions Clés de Discovery",
+            "strat-dict-title": "5. Notions Essentielles",
+            "strat-terms-title": "6. Conditions & Devises",
+            "click-solution": "Cliquer pour la solution",
+            "status-report": "Report",
+            "status-deport": "Déport",
+            "chart-spot": "Taux Spot",
+            "chart-forward": "Taux Forward",
+            "gen-loading": "Génération en cours...",
+            "ana-loading": "Analyse live...",
+            "obj-loading": "Réponse objection...",
+            "urgency-matrix-title": "Aperçu Macroéconomique",
+            "urgency-call-reason": "Raison d'appeler aujourd'hui :",
+            "status-upcoming": "À VENIR",
+            "status-passed": "RÉCENT"
+        },
+        en: {
+            "nav-pitch": "Discovery & Pitch",
+            "nav-simulator": "Simulator",
+            "nav-strategy": "Strategy & Cheat Sheet",
+            "discovery-title": "Client Discovery",
+            "label-industry": "Industry (AE Targeting)",
+            "btn-generate-hook": "Industry Approach",
+            "label-during-call": "During the exchange:",
+            "label-pair": "Pair mentioned",
+            "label-competitor": "Current competitor",
+            "sentiment-title": "Market Sentiment",
+            "sent-bearish": "Bearish",
+            "sent-neutral": "Neutral",
+            "sent-bullish": "Bullish",
+            "live-chart": "Live Chart",
+            "assistant-badge": "Live AE Assistant",
+            "btn-reset": "RESET",
+            "btn-copy": "COPY PITCH",
+            "empty-title": "Discovery & Argumentation",
+            "empty-desc": "Bricks will appear as you progress in your discovery.",
+            "cia-title": "Decision Support",
+            "cia-subtitle": "Interactive Volatility Simulation",
+            "risk-model": "Risk Model",
+            "vol-label": "Estimated Annual Volume",
+            "volat-label": "Adverse Variation to Simulate (%)",
+            "degraded-rate-label": "Estimated Degraded Rate",
+            "margin-erosion-label": "Potential Margin Erosion",
+            "footer-remind": "Reminder: Focus on real interbank rates and strategic margin protection via FXF.",
+            "sim-title": "Forward Rate Simulator",
+            "mode-fixed": "Fixed Date",
+            "mode-flex": "Flexible",
+            "base-curr-label": "Base currency",
+            "quoted-curr-label": "Counter currency",
+            "spot-rate-label": "Spot Rate",
+            "rate-short": "Rate",
+            "start-date": "Start date",
+            "end-date": "Maturity",
+            "chart-viz": "Rate Visualization",
+            "guaranteed-rate": "Guaranteed Rate",
+            "strat-goal-title": "0. Goal of the Call",
+            "strat-goal-subtitle": "Sell the expert meeting",
+            "strat-goal-desc": "The goal is not to sell the Forward directly but to sell the expertise and schedule a meeting with a <strong>PSE</strong>.",
+            "strat-base-pitch-label": "Base Pitch:",
+            "strat-base-pitch-text": "\"A forward exchange contract allows you to lock in a rate for future transactions and thus protect your business margins.\"",
+            "strat-qual-title": "1. Qualification Checklist",
+            "strat-edge-title": "3. Revolut Advantage",
+            "strat-obj-title": "Objection Handling (Click for answer)",
+            "strat-disc-title": "4. Key Discovery Questions",
+            "strat-dict-title": "5. Essential Concepts",
+            "strat-terms-title": "6. Standard Terms & Currencies",
+            "click-solution": "Click for solution",
+            "status-report": "Premium",
+            "status-deport": "Discount",
+            "chart-spot": "Spot Rate",
+            "chart-forward": "Forward Rate",
+            "gen-loading": "Generating...",
+            "ana-loading": "Live analysis...",
+            "obj-loading": "Objecting handling...",
+            "urgency-matrix-title": "Macroeconomic Overview",
+            "urgency-call-reason": "Reason to call today:",
+            "status-upcoming": "UPCOMING",
+            "status-passed": "RECENT"
+        }
+    };
+
+
+    // MARKET TRIGGERS DATA AVEC DATES ET RÉSUMÉS PRÉCIS
+    const marketTriggersData = {
+        USD: [
+            {
+                event: { fr: "Indice des Prix à la Consommation (CPI)", en: "Consumer Price Index (CPI)" },
+                date: "11 Mars 2026",
+                status: "upcoming",
+                summary: { fr: "Inflation attendue stable à 3.1% YoY.", en: "Inflation expected steady at 3.1% YoY." },
+                reason: { 
+                    fr: "Publication demain à 14h30. Une inflation plus haute que prévu renforcerait brutalement le dollar.",
+                    en: "Release tomorrow at 2:30 PM. Higher-than-expected inflation would sharply strengthen the dollar."
+                }
+            },
+            {
+                event: { fr: "Minutes de la Réserve Fédérale (FOMC)", en: "Fed Minutes (FOMC)" },
+                date: "04 Mars 2026",
+                status: "passed",
+                summary: { fr: "Maintien d'un ton 'Hawkish' sur les taux.", en: "Maintained 'Hawkish' stance on rates." },
+                reason: { 
+                    fr: "Le ton restrictif de la semaine dernière pèse sur le dollar. Profitez du rebond technique actuel.",
+                    en: "The hawkish tone from last week is weighing on the dollar. Take advantage of the current technical rebound."
+                }
+            }
+        ],
+        EUR: [
+            {
+                event: { fr: "Décision sur les taux de la BCE", en: "ECB Interest Rate Decision" },
+                date: "12 Mars 2026",
+                status: "upcoming",
+                summary: { fr: "Prévision d'un statu quo sur le taux de dépôt.", en: "Forecast of status quo on deposit rate." },
+                reason: { 
+                    fr: "Réunion jeudi. Christine Lagarde pourrait signaler une pause, ce qui affaiblirait l'Euro face au Big 3.",
+                    en: "Meeting this Thursday. Lagarde might signal a pause, weakening the Euro against the Big 3."
+                }
+            },
+            {
+                event: { fr: "Estimation Flash de l'Inflation (HICP)", en: "Flash Inflation Estimate (HICP)" },
+                date: "01 Mars 2026",
+                status: "passed",
+                summary: { fr: "Inflation en baisse plus rapide que prévu à 2.4%.", en: "Inflation falling faster than expected at 2.4%." },
+                reason: { 
+                    fr: "Les chiffres ont montré une baisse de croissance. L'Euro est vulnérable sur le long terme.",
+                    en: "Figures showed a growth decline. The Euro remains vulnerable in the long run."
+                }
+            },
+            {
+                event: { fr: "Indicateur PMI Manufacturier Eurozone", en: "Eurozone Manufacturing PMI" },
+                date: "23 Mars 2026",
+                status: "upcoming",
+                summary: { fr: "Analyse de la contraction industrielle allemande.", en: "Analysis of German industrial contraction." },
+                reason: { 
+                    fr: "Donnée clé sur la santé industrielle. Un chiffre sous 50 accélérerait la volatilité EUR/USD.",
+                    en: "Key industrial health metric. A figure under 50 would accelerate EUR/USD volatility."
+                }
+            }
+        ],
+        GBP: [
+            {
+                event: { fr: "Chiffres de l'emploi ONS (UK)", en: "ONS Employment Figures (UK)" },
+                date: "17 Mars 2026",
+                status: "upcoming",
+                summary: { fr: "Focus sur la croissance des salaires (+4.5%).", en: "Focus on wage growth (+4.5%)." },
+                reason: { 
+                    fr: "La livre réagit fortement au chômage. Anticipez le risque de baisse des taux de la BoE.",
+                    en: "The pound reacts strongly to unemployment. Anticipate the risk of BoE rate cuts."
+                }
+            }
+        ],
+        CHF: [
+            {
+                event: { fr: "Annonce trimestrielle de la BNS", en: "SNB Quarterly Assessment" },
+                date: "19 Mars 2026",
+                status: "upcoming",
+                summary: { fr: "Risque d'intervention contre le CHF trop fort.", en: "Risk of intervention against strong CHF." },
+                reason: { 
+                    fr: "Le Franc Suisse est trop fort pour les exportateurs. Risque d'intervention pour dévaluer.",
+                    en: "The Swiss Franc is too strong for exporters. Risk of intervention to devalue."
+                }
+            }
+        ]
+    };
+
+
+    const industries = {
+        fr: [
+            { label: "Import / Export", val: "Import / Export" },
+            { label: "Pharma / Santé", val: "Pharma / Santé" },
+            { label: "Luxe / Retail", val: "Luxe / Retail" },
+            { label: "Optique / Packaging", val: "Optique / Packaging" },
+            { label: "SaaS companies (Cloud/CRM)", val: "SaaS companies" },
+            { label: "Tech Startups (US VCs)", val: "Tech Startups" },
+            { label: "Marketing Agencies", val: "Marketing Agencies" },
+            { label: "Global Recruitment", val: "Global Recruitment" },
+            { label: "Travel / Tourisme", val: "Travel / Tourisme" },
+            { label: "Wholesale Food/Drink", val: "Food & Drink wholesale" },
+            { label: "Industrie Manufacturière", val: "Industrie Manufacturière" },
+            { label: "Property Investment", val: "Property Investment" },
+            { label: "Insurance Firms", val: "Insurance Firms" },
+            { label: "Financial Services", val: "Financial Services" }
+        ],
+        en: [
+            { label: "Import / Export", val: "Import / Export" },
+            { label: "Pharma / Healthcare", val: "Pharma / Healthcare" },
+            { label: "Luxury / Retail", val: "Luxury / Retail" },
+            { label: "Optics / Packaging", val: "Optics / Packaging" },
+            { label: "SaaS companies (Cloud/CRM)", val: "SaaS companies" },
+            { label: "Tech Startups (US VCs)", val: "Tech Startups" },
+            { label: "Marketing Agencies", val: "Marketing Agencies" },
+            { label: "Global Recruitment", val: "Global Recruitment" },
+            { label: "Travel / Tourism", val: "Travel / Tourism" },
+            { label: "Wholesale Food/Drink", val: "Food & Drink wholesale" },
+            { label: "Manufacturing", val: "Manufacturing" },
+            { label: "Property Investment", val: "Property Investment" },
+            { label: "Insurance Firms", val: "Insurance Firms" },
+            { label: "Financial Services", val: "Financial Services" }
+        ]
+    };
+
+
+    const competitors = {
+        fr: ["Inconnu", "Banque traditionnelle", "Wise", "Autre Broker"],
+        en: ["Unknown", "High Street Bank", "Wise", "Other Broker"]
+    };
+
+
+    const strategyContent = {
+        fr: {
+            qualList: [
+                { bold: "Devises :", text: "Doit impliquer au moins une devise du <span class='text-emerald-600 font-bold'>Big 3 (EUR / USD / GBP)</span>.", sub: "Ex: EUR/CHF ou USD/HUF est possible, mais pas CHF/PLN." },
+                { bold: "Visibilité :", text: "Le client doit avoir une fourchette de flux FX annuelle estimée.", sub: null },
+                { bold: "Éducation :", text: "Nouveau sur le produit ? Simple à convaincre. Déjà utilisateur ? Comprendre l'expérience passée.", sub: null }
+            ],
+            edgeList: [
+                { title: "Rapidité & Autonomie", text: "\"Bookez vous-même en quelques clics sans passer d'appel téléphonique opaque.\"" },
+                { title: "Transparence Totale", text: "\"Pas de frais cachés. Les coûts sont annoncés avant la validation.\"" },
+                { title: "Proximité", text: "\"Accès direct à votre AE et PSE pour un suivi stratégique.\"" }
+            ],
+            objections: [
+                { id: 1, front: "\"Et si le cours s'améliore dans 6 mois ? Je vais perdre de l'argent.\"", backTitle: "Règle des 50%", backText: "\"On protège 50% de vos besoins annuels. Si le marché s'améliore, vous utilisez du spot pour l'autre moitié. C'est un outil de protection, pas de spéculation.\"" },
+                { id: 2, front: "\"Oui mais c'est du casino...\"", backTitle: "Budget & Marge", backText: "\"L'idée n'est pas de deviner le futur, mais de savoir exactement combien votre marchandise va vous coûter aujourd'hui pour sécuriser votre profit.\"" },
+                { id: 3, front: "\"Je n'ai pas la trésorerie pour bloquer de l'argent maintenant.\"", backTitle: "Dépôt Flexible", backText: "\"Ce n'est pas la somme totale, mais une fraction (10% CHF, 5% autres). On peut même optimiser selon vos bilans.\"" },
+                { id: 4, front: "\"Les frais sont trop élevés...\"", backTitle: "Coût de Prévention", backText: "\"La protection de marge a un coût, mais une baisse de 10% du cours vous coûtera infiniment plus cher. Le FXF est une assurance.\"" }
+            ],
+            discQuestions: [
+                "Comment gérez-vous actuellement votre change de devise ?",
+                "Comment est-ce que vous vous protégez de la volatilité du marché ?",
+                "Est-ce que votre marge commerciale est impactée si le cours bouge de 5% ?",
+                "Avez-vous une visibilité sur vos paiements fournisseurs pour les 6 prochains mois ?"
+            ],
+            dictionary: [
+                { term: "Formule Taux Forward", def: "Le cours à terme est déterminé par le différentiel de taux d'intérêt entre les deux devises sur la période donnée.", extra: "\\[ F = S \\times \\frac{1 + (r_{q} \\times t)}{1 + (r_{b} \\times t)} \\]" },
+                { term: "Appel de Marge (Margin Call)", def: "Demande de dépôt de fonds additionnels si la valeur de marché du contrat (Mark-to-Market) se dégrade trop par rapport au dépôt initial.", icon: "alert-octagon" },
+                { term: "Report (Premium)", def: "Situation où le cours Forward est supérieur au cours Spot ($F > S$). Cela arrive quand le taux d'intérêt de la devise de contrepartie est plus élevé.", icon: "trending-up" },
+                { term: "Déport (Discount)", def: "Situation où le cours Forward est inférieur au cours Spot ($F < S$). Arrive quand la devise de base a un taux d'intérêt plus fort.", icon: "trending-down" },
+                { term: "Taux Interbancaire", def: "Le cours 'Mid-Market' auquel les banques s'échangent des devises. C'est la base de prix transparente utilisée par Revolut.", icon: "landmark" },
+                { term: "Mark-to-Market", def: "Évaluation de la valeur actuelle du contrat par rapport au prix du marché live. Crucial pour le suivi du risque.", icon: "activity" }
+            ],
+            terms: [
+                { bold: "Montant total maximal", text: "Jusqu'à 500 000 £ (UK) ou 500 000 € (EEA).", icon: "banknote" },
+                { bold: "Dépôt initial", text: "5% de la valeur (10% pour devises hors Big 3), rendu à mesure de l'utilisation.", icon: "lock" },
+                { bold: "Appel de marge", text: "Seuil de 2,5%.", icon: "alert-triangle" },
+                { bold: "Markup", text: "0,8% (ou 1,5% dès qu'il concerne une devise hors Big 3).", icon: "percent" },
+                { bold: "Durée du contrat", text: "Jusqu'à 12 mois.", icon: "calendar" },
+                { bold: "Annulation", text: "Markup et coût de risque de change conservés.", icon: "x-circle" }
+            ],
+            forwardCurrencies: ["PLN", "HUF", "SEK", "RON", "DKK", "CZK", "CHF", "NOK"]
+        },
+        en: {
+            qualList: [
+                { bold: "Currencies:", text: "Must involve at least one <span class='text-emerald-600 font-bold'>Big 3 currency (EUR / USD / GBP)</span>.", sub: "Ex: EUR/CHF or USD/HUF is possible, but not CHF/PLN." },
+                { bold: "Visibility:", text: "The client must have an estimated annual FX flow range.", sub: null },
+                { bold: "Education:", text: "New to the product? Easy to convince. Already using? Understand past experience.", sub: null }
+            ],
+            edgeList: [
+                { title: "Speed & Autonomy", text: "\"Book it yourself in a few clicks without opaque phone calls.\"" },
+                { title: "Total Transparency", text: "\"No hidden fees. Costs are announced before validation.\"" },
+                { title: "Proximity", text: "\"Direct access to your AE and PSE for strategic follow-up.\"" }
+            ],
+            objections: [
+                { id: 1, front: "\"What if the rate improves in 6 months? I'll lose money.\"", backTitle: "50% Rule", backText: "\"We protect 50% of your annual needs. If the market improves, you use spot for the other half. It's a protection tool, not speculation.\"" },
+                { id: 2, front: "\"But it's just gambling...\"", backTitle: "Budget & Margin", backText: "\"The idea isn't to guess the future, but to know exactly how much your goods will cost today to secure your profit.\"" },
+                { id: 3, front: "\"I don't have the cash flow to lock money away now.\"", backTitle: "Flexible Deposit", backText: "\"It's not the total amount, but a fraction (10% CHF, 5% others). We can even optimize based on your balance sheets.\"" },
+                { id: 4, front: "\"Fees are too high...\"", backTitle: "Prevention Cost", backText: "\"Protecting margin has a cost, but a 10% market drop will cost you much more. FXF is insurance.\"" }
+            ],
+            discQuestions: [
+                "How do you currently manage your currency exchange?",
+                "How do you protect yourself against market volatility?",
+                "Is your profit margin impacted if the rate moves by 5%?",
+                "Do you have visibility on your supplier payments for the next 6 months?"
+            ],
+            dictionary: [
+                { term: "Forward Rate Formula", def: "The forward rate is calculated using the interest rate differential between the two currencies over the selected period.", extra: "\\[ F = S \\times \\frac{1 + (r_{q} \\times t)}{1 + (r_{b} \\times t)} \\]" },
+                { term: "Margin Call", def: "Requirement for additional funds if the contract's market value (Mark-to-Market) drops significantly relative to your initial deposit.", icon: "alert-octagon" },
+                { term: "Report (Premium)", def: "When the Forward rate is higher than the Spot rate ($F > S$). Happens when the quoted currency interest rate is higher.", icon: "trending-up" },
+                { term: "Déport (Discount)", def: "When the Forward rate is lower than the Spot rate ($F < S$). Happens when the base currency interest rate is higher.", icon: "trending-down" },
+                { term: "Interbank Rate", def: "The mid-market price at which banks trade currencies. The transparent pricing foundation used by Revolut.", icon: "landmark" },
+                { term: "Mark-to-Market", def: "Valuation of the current contract compared to live market prices. Essential for risk tracking.", icon: "activity" }
+            ],
+            terms: [
+                { bold: "Maximum total amount", text: "Up to £500,000 (UK) or €500,000 (EEA).", icon: "banknote" },
+                { bold: "Initial deposit", text: "5% of value (10% for non-Big 3 currencies), returned as the forward is used.", icon: "lock" },
+                { bold: "Margin call", text: "2.5% threshold.", icon: "alert-triangle" },
+                { bold: "Markup", text: "0.8% (or 1.5% if the pair includes a non-Big 3 currency).", icon: "percent" },
+                { bold: "Contract duration", text: "Up to 12 months.", icon: "calendar" },
+                { bold: "Cancellation", text: "Markup and FX risk costs are retained.", icon: "x-circle" }
+            ],
+            forwardCurrencies: ["PLN", "HUF", "SEK", "RON", "DKK", "CZK", "CHF", "NOK"]
+        }
+    };
+
+
+    function switchGlobalLanguage(lang) {
+        currentLang = lang;
+        applyTranslations();
+        update(); // Refresh charts and sims
+        resetPitch();
+        renderUrgencyMatrix(); // Update triggers language
+    }
+
+
+    function applyTranslations() {
+        const t = i18n[currentLang];
+        
+        // Static translations
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.innerHTML = t[key];
+        });
+
+
+        // App title
+        document.getElementById('app-subtitle').innerText = 'AE FX Live Assistant';
+
+
+        // Selects
+        const indSelect = document.getElementById('client-industry');
+        indSelect.innerHTML = industries[currentLang].map(i => `<option value="${i.val}">${i.label}</option>`).join('');
+
+
+        const compSelect = document.getElementById('competitor');
+        compSelect.innerHTML = competitors[currentLang].map((c, idx) => `<option value="${c}">${idx === 0 ? (currentLang === 'fr' ? '-- Non renseigné --' : '-- Not specified --') : c}</option>`).join('');
+
+
+        // Strategy Page Dynamic Injection
+        const strat = strategyContent[currentLang];
+        
+        // Checklist
+        document.getElementById('strat-qual-list').innerHTML = strat.qualList.map(item => `
+            <li class="flex items-start gap-3">
+                <div class="mt-1 w-4 h-4 rounded bg-emerald-100 flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3 text-emerald-600"></i></div>
+                <div class="text-xs leading-relaxed">
+                    <span class="font-bold">${item.bold}</span> ${item.text}
+                    ${item.sub ? `<div class="mt-1 p-2 bg-slate-50 rounded border border-dashed border-slate-200 italic text-[10px]">${item.sub}</div>` : ''}
+                </div>
+            </li>
+        `).join('');
+
+
+        // Edge
+        document.getElementById('strat-edge-list').innerHTML = strat.edgeList.map(item => `
+            <div>
+                <p class="text-[10px] font-black text-indigo-600 uppercase mb-1">${item.title}</p>
+                <p class="text-xs text-slate-600 italic">${item.text}</p>
+            </div>
+        `).join('');
+
+
+        // Terms (REWORKED SECTION 6)
+        document.getElementById('strat-terms-list').innerHTML = strat.terms.map(item => `
+            <div class="term-card">
+                <div class="p-2 rounded-lg bg-indigo-50 shrink-0">
+                    <i data-lucide="${item.icon}" class="w-4 h-4 text-indigo-600"></i>
+                </div>
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-slate-400 leading-none mb-1 tracking-wider">${item.bold}</h5>
+                    <p class="text-[11px] font-bold text-slate-800 leading-tight">${item.text}</p>
+                </div>
+            </div>
+        `).join('');
+
+
+        document.getElementById('strat-curr-list').innerHTML = strat.forwardCurrencies.map(curr => `
+            <span class="bg-indigo-400 text-white text-[10px] font-black px-2 py-1 rounded-lg border border-indigo-300 shadow-sm uppercase">${curr}</span>
+        `).join('');
+
+
+        // Objections
+        document.getElementById('objections-container').innerHTML = strat.objections.map(obj => `
+            <div class="objection-card" onclick="this.classList.toggle('flipped')">
+                <div class="objection-inner">
+                    <div class="objection-front card shadow-md border-rose-100">
+                        <p class="text-rose-500 font-black text-[10px] uppercase mb-2">Objection ${obj.id}</p>
+                        <p class="font-bold text-slate-900">${obj.front}</p>
+                        <p class="mt-4 text-[10px] text-slate-400 animate-pulse uppercase">${t['click-solution']}</p>
+                    </div>
+                    <div class="objection-back card shadow-lg border-emerald-100">
+                        <p class="text-emerald-600 font-black text-[10px] uppercase mb-2">${obj.backTitle}</p>
+                        <p class="text-xs leading-relaxed text-slate-700 italic">${obj.backText}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+
+        // Disc Questions
+        document.getElementById('strat-disc-list').innerHTML = strat.discQuestions.map(q => `
+            <div class="p-4 rounded-xl border border-slate-700 bg-slate-800/50">
+                <p class="text-sm font-bold italic">"${q}"</p>
+            </div>
+        `).join('');
+
+
+        // Dictionary
+        document.getElementById('strat-dict-container').innerHTML = strat.dictionary.map(item => `
+            <div class="p-5 rounded-2xl bg-white border border-slate-100 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="p-1.5 rounded-lg bg-indigo-50">
+                            <i data-lucide="${item.icon || 'file-text'}" class="w-4 h-4 text-indigo-600"></i>
+                        </div>
+                        <h5 class="text-xs font-black uppercase text-slate-800 tracking-tight">${item.term}</h5>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">${item.def}</p>
+                </div>
+                ${item.extra ? `<div class="math-box mt-3">${item.extra}</div>` : ''}
+            </div>
+        `).join('');
+
+
+        // Trigger math rendering safely
+        if (window.renderMathInElement && document.body) {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false}
+                ]
+            });
+        }
+
+
+        lucide.createIcons();
+    }
+
+
+    // URGENCY MATRIX LOGIC
+    function renderUrgencyMatrix() {
+        const base = pitchBaseIn.value;
+        const quoted = pitchQuotedIn.value;
+        
+        if (base === "UNKNOWN" || quoted === "UNKNOWN") {
+            matrixContainer.classList.add('hidden');
+            return;
+        }
+
+
+        let triggers = [];
+        if (marketTriggersData[base]) {
+            marketTriggersData[base].forEach(t => triggers.push({ currency: base, ...t }));
+        }
+        if (marketTriggersData[quoted]) {
+            marketTriggersData[quoted].forEach(t => triggers.push({ currency: quoted, ...t }));
+        }
+
+
+        if (triggers.length === 0) {
+            matrixContainer.classList.remove('hidden');
+            matrixList.innerHTML = `<div class='col-span-full p-4 text-center italic text-amber-600/60 text-[10px]'>Aucun trigger majeur ce jour. Profitez du cours Spot stabilisé.</div>`;
+            return;
+        }
+
+
+        matrixContainer.classList.remove('hidden');
+        matrixList.innerHTML = triggers.map(t => {
+            const statusLabel = i18n[currentLang][t.status === 'upcoming' ? 'status-upcoming' : 'status-passed'];
+            const statusClass = t.status === 'upcoming' ? 'bg-indigo-500' : 'bg-slate-400';
+            
+            return `
+            <div class="trigger-item p-4 rounded-xl border border-amber-200 bg-white shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[9px] font-black bg-amber-200 text-amber-800 px-2 py-0.5 rounded uppercase">${t.currency}</span>
+                        <span class="text-[9px] font-black ${statusClass} text-white px-2 py-0.5 rounded uppercase">${statusLabel}</span>
+                    </div>
+                    <h5 class="text-xs font-bold text-slate-900 mb-0.5">${t.event[currentLang]}</h5>
+                    <p class="text-[9px] text-slate-400 font-bold mb-2 uppercase tracking-tighter">${t.summary[currentLang]}</p>
+                    <p class="text-[10px] text-indigo-600 font-bold mb-2 flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-3 h-3"></i> ${t.date}
+                    </p>
+                </div>
+                <div class="h-px bg-amber-100 mb-2 mt-auto"></div>
+                <p class="text-[10px] text-slate-500 font-medium leading-tight italic">
+                    <span class="text-amber-700 font-bold font-sans not-italic">${i18n[currentLang]['urgency-call-reason']}</span> "${t.reason[currentLang]}"
+                </p>
+            </div>
+        `}).join('');
+        lucide.createIcons();
+    }
 
 
     function initChart() {
@@ -764,8 +1274,8 @@
         dynamicChartInstance = new Chart(dynCtx, {
             type: 'bar',
             data: {
-                labels: ['Taux Spot', 'Taux Forward'],
-                datasets: [{ label: 'Cours', data: [1.2816, 1.2624], backgroundColor: ['#cbd5e1', '#4f46e5'], barThickness: 80, borderRadius: 8 }]
+                labels: [i18n[currentLang]['chart-spot'], i18n[currentLang]['chart-forward']],
+                datasets: [{ label: 'Rate', data: [1.2816, 1.2624], backgroundColor: ['#cbd5e1', '#4f46e5'], barThickness: 80, borderRadius: 8 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
@@ -798,7 +1308,6 @@
         startDateIn.valueAsDate = dPlus1;
 
 
-        // Extension J+365
         const dPlus365 = new Date(today);
         dPlus365.setDate(today.getDate() + 365);
         endDateIn.max = dPlus365.toISOString().split('T')[0];
@@ -808,7 +1317,7 @@
         dPlus90 = ensureWeekday(dPlus90);
       
         endDateIn.valueAsDate = dPlus90;
-        endDateIn.min = dPlus1.toISOString().split('T')[0];
+        endDateIn.min = startDateIn.value;
     }
 
 
@@ -876,6 +1385,7 @@
             spotLoader.classList.add('hidden');
             update();
             generateMarketBrick();
+            renderUrgencyMatrix(); // Call matrix update when rates update
         }
     }
 
@@ -895,16 +1405,18 @@
         const lossValue = (volume * spot * factor);
       
         document.getElementById('custom-rate-result').innerText = degRate;
-        document.getElementById('custom-loss-result').innerText = `- ${lossValue.toLocaleString('fr-FR', {maximumFractionDigits: 0})} ${quotedSym}`;
+        document.getElementById('custom-loss-result').innerText = `- ${lossValue.toLocaleString(currentLang === 'fr' ? 'fr-FR' : 'en-US', {maximumFractionDigits: 0})} ${quotedSym}`;
 
 
         const impactPhrase = document.getElementById('impact-phrase');
         if(volume > 0 && spot > 0) {
-            impactPhrase.innerHTML = `
-              "Au cours actuel de <strong>${spot}</strong>, un mouvement adverse de <strong>${volatility}%</strong> ferait passer votre taux à <strong>${degRate}</strong>. Sur votre volume annuel, cela représenterait une érosion de <strong>${lossValue.toLocaleString('fr-FR', {maximumFractionDigits: 0})} ${quotedSym}</strong>. C'est précisément ce risque de volatilité que le FX Forward aide à stabiliser pour sécuriser vos marges."
-            `;
+            if (currentLang === 'fr') {
+                impactPhrase.innerHTML = `"Au cours actuel de <strong>${spot}</strong>, un mouvement adverse de <strong>${volatility}%</strong> ferait passer votre taux à <strong>${degRate}</strong>. Sur votre volume annuel, cela représenterait une érosion de <strong>${lossValue.toLocaleString('fr-FR', {maximumFractionDigits: 0})} ${quotedSym}</strong>. C'est précisément ce risque de volatilité que le FX Forward aide à stabiliser."`;
+            } else {
+                impactPhrase.innerHTML = `"At the current rate of <strong>${spot}</strong>, an adverse movement of <strong>${volatility}%</strong> would drop your rate to <strong>${degRate}</strong>. Based on your annual volume, this would represent a <strong>${lossValue.toLocaleString('en-US', {maximumFractionDigits: 0})} ${quotedSym}</strong> erosion. This volatility risk is exactly what the FX Forward stabilizes."`;
+            }
         } else {
-            impactPhrase.innerText = "Saisissez un volume pour générer l'argumentaire personnalisé.";
+            impactPhrase.innerText = currentLang === 'fr' ? "Saisissez un volume pour générer l'argumentaire." : "Enter a volume to generate the argument.";
         }
     }
 
@@ -912,7 +1424,8 @@
     function updateTradingView(base, quoted) {
         if (base === "UNKNOWN" || quoted === "UNKNOWN") return;
         const symbol = `FX_IDC:${base}${quoted}`;
-        tvIframe.src = `https://s.tradingview.com/widgetembed/?symbol=${symbol}&interval=D&theme=light&style=1&locale=fr`;
+        const locale = currentLang === 'fr' ? 'fr' : 'en';
+        tvIframe.src = `https://s.tradingview.com/widgetembed/?symbol=${symbol}&interval=D&theme=light&style=1&locale=${locale}`;
     }
 
 
@@ -934,25 +1447,21 @@
         if (baseCurrencyIn.value !== "UNKNOWN" && quotedCurrencyIn.value !== "UNKNOWN") {
             fetchInterbankRate();
             updateTradingView(baseCurrencyIn.value, quotedCurrencyIn.value);
+            renderUrgencyMatrix();
         }
     }
 
 
     document.querySelectorAll('.currency-selector').forEach(selector => {
-        selector.addEventListener('change', (e) => {
-            syncDevises(e.target.id, e.target.value);
-        });
+        selector.addEventListener('change', (e) => syncDevises(e.target.id, e.target.value));
     });
 
 
-    const compSelect = document.getElementById('competitor');
-    if (compSelect) {
-        compSelect.addEventListener('change', () => {
-            const emptyState = document.getElementById('empty-state');
-            if (emptyState) emptyState.style.display = 'none';
-            generateCompetitorBrick();
-        });
-    }
+    document.getElementById('competitor').addEventListener('change', () => {
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState) emptyState.style.display = 'none';
+        generateCompetitorBrick();
+    });
 
 
     annualVolumeIn.addEventListener('input', calculateCostOfInaction);
@@ -974,11 +1483,9 @@
     function switchPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-       
         document.getElementById('tab-pitch').classList.toggle('active', pageId === 'pitch-page');
         document.getElementById('tab-simulator').classList.toggle('active', pageId === 'simulator-page');
         document.getElementById('tab-strategy').classList.toggle('active', pageId === 'strategy-page');
-       
         lucide.createIcons();
     }
 
@@ -987,7 +1494,7 @@
         const base = baseCurrencyIn.value;
         const quoted = quotedCurrencyIn.value;
         const pair = `${base}/${quoted}`;
-        labelSpotText.innerText = `Cours Spot ${pair}`;
+        labelSpotText.innerText = `${i18n[currentLang]['spot-rate-label']} ${pair}`;
         labelRbInput.innerText = base;
         labelRqInput.innerText = quoted;
         labelPairFinal.innerText = pair;
@@ -999,27 +1506,22 @@
       
         const today = new Date();
         const start = new Date(startDateIn.value);
-      
-        // Durée Today à Date de Début
         let daysToStart = Math.round((start - today) / 86400000);
         if (daysToStart < 0) daysToStart = 0;
 
 
-        // Markup : 1,5% si CHF présent, 0,8% sinon
         const markupFactor = (base === 'CHF' || quoted === 'CHF') ? 0.985 : 0.992;
-
-
         let f = s * ((1 + (rq/100) * (daysToStart/360)) / (1 + (rb/100) * (daysToStart/360)));
         f = f * markupFactor;
-
-
         if (currentMode === 'flexible') f = f * 0.9985;
      
         pipsRes.innerText = ((f - s) * 10000).toFixed(1) + " pips";
         finalRateRes.innerText = f.toFixed(4);
-        statusBadge.innerText = (f >= s) ? "Report" : "Déport";
+        statusBadge.innerText = (f >= s) ? i18n[currentLang]['status-report'] : i18n[currentLang]['status-deport'];
+        statusBadge.className = (f >= s) ? "bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase shadow-sm" : "bg-rose-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase shadow-sm";
      
-        if (dynamicChartInstance && dynamicChartInstance.data && dynamicChartInstance.data.datasets) {
+        if (dynamicChartInstance) {
+            dynamicChartInstance.data.labels = [i18n[currentLang]['chart-spot'], i18n[currentLang]['chart-forward']];
             dynamicChartInstance.data.datasets[0].data = [s, f];
             dynamicChartInstance.update();
         }
@@ -1033,10 +1535,9 @@
         document.getElementById('brick-container-hook').innerHTML = '';
         document.getElementById('brick-container-market').innerHTML = '';
         document.getElementById('brick-container-competitor').innerHTML = '';
-        const ciaCard = document.getElementById('cost-inaction-card');
-        if (ciaCard) ciaCard.classList.add('hidden');
-        const sentCard = document.getElementById('sentiment-card');
-        if (sentCard) sentCard.classList.add('hidden');
+        document.getElementById('cost-inaction-card').classList.add('hidden');
+        document.getElementById('sentiment-card').classList.add('hidden');
+        matrixContainer.classList.add('hidden');
     }
 
 
@@ -1044,12 +1545,11 @@
         const emptyState = document.getElementById('empty-state');
         if (emptyState) emptyState.style.display = 'none';
         const industry = document.getElementById('client-industry').value;
-        const lang = pitchLangIn.value;
         const container = document.getElementById('brick-container-hook');
-        container.innerHTML = '<div class="brick brick-hook italic text-slate-400 text-xs animate-pulse">Génération en cours...</div>';
+        container.innerHTML = `<div class="brick brick-hook italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['gen-loading']}</div>`;
      
-        const sys = `Tu es AE chez Revolut Business. Rédige une ACCROCHE d'appel en ${lang}. Hook : 'Votre métier n'est pas d'être trader, mais de gérer vos stocks'. Environ 85 mots.`;
-        const text = await apiCall(sys, `Secteur : ${industry}. Langue : ${lang}.`);
+        const sys = `You are an AE at Revolut Business. Write a call HOOK in ${currentLang}. Hook: 'Your job isn't to be a trader, but to manage your inventory'. Max 80 words. Focus on the value of hedging.`;
+        const text = await apiCall(sys, `Industry: ${industry}.`);
         container.innerHTML = `<div class="brick brick-hook font-medium text-slate-700 leading-relaxed">${text}</div>`;
     }
 
@@ -1058,34 +1558,31 @@
         const base = pitchBaseIn.value;
         const quoted = pitchQuotedIn.value;
         const spot = spotIn.value;
-        const lang = pitchLangIn.value;
         const container = document.getElementById('brick-container-market');
         const sentimentCard = document.getElementById('sentiment-card');
        
         if (base === "UNKNOWN" || quoted === "UNKNOWN") return;
 
 
-        container.innerHTML = '<div class="brick brick-market italic text-slate-400 text-xs animate-pulse">Analyse live...</div>';
+        container.innerHTML = `<div class="brick brick-market italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['ana-loading']}</div>`;
         if (sentimentCard) {
             sentimentCard.classList.remove('hidden');
-            updateSentiment(50, "Analyse...");
+            updateSentiment(50, currentLang === 'fr' ? "Analyse..." : "Analyzing...");
         }
 
 
-        const sysPrompt = `Tu es AE expert FX chez Revolut Business. Analyse la paire ${base}/${quoted} à ${spot} en ${lang}.
-        1. Rédige une analyse marché rapide sans conseil financier (Max 60 mots).
-        2. Donne un score de sentiment entre 0 (Totalement Bearish/Baissier) et 100 (Totalement Bullish/Haussier) basé sur les tendances macro actuelles.
-        Réponds au format JSON suivant: {"text": "ton analyse ici", "score": 75}`;
+        const sysPrompt = `You are a Revolut Business FX expert. Analyze ${base}/${quoted} at ${spot} in ${currentLang}.
+        1. Fast market analysis without financial advice (Max 60 words).
+        2. Sentiment score 0-100 (0 Bearish, 100 Bullish).
+        JSON format: {"text": "analysis", "score": 75}`;
        
         try {
-            const response = await apiCall(sysPrompt, `Paire ${base}/${quoted} à ${spot}.`, true);
+            const response = await apiCall(sysPrompt, `Pair ${base}/${quoted} @ ${spot}.`, true);
             const data = JSON.parse(response);
-           
-            container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1">Analyse Marché (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${data.text}</div></div>`;
-           
+            container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1">Market Analysis (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${data.text}</div></div>`;
             updateSentiment(data.score);
         } catch (e) {
-            container.innerHTML = `<div class="brick brick-market">Erreur d'analyse.</div>`;
+            container.innerHTML = `<div class="brick brick-market">Analysis unavailable.</div>`;
         }
     }
 
@@ -1093,17 +1590,16 @@
     function updateSentiment(score, manualText = null) {
         const cursor = document.getElementById('sentiment-cursor');
         const textLabel = document.getElementById('sentiment-text');
-       
         if (cursor) cursor.style.left = `${score}%`;
        
-        let label = "Neutre";
+        let label = currentLang === 'fr' ? "Neutre" : "Neutral";
         let colorClass = "text-slate-400 bg-slate-100";
        
         if (score < 40) {
-            label = "Bearish";
+            label = currentLang === 'fr' ? "Bearish" : "Bearish";
             colorClass = "text-rose-600 bg-rose-50";
         } else if (score > 60) {
-            label = "Bullish";
+            label = currentLang === 'fr' ? "Bullish" : "Bullish";
             colorClass = "text-emerald-600 bg-emerald-50";
         }
        
@@ -1116,56 +1612,64 @@
 
     async function generateCompetitorBrick() {
         const comp = document.getElementById('competitor').value;
-        const lang = pitchLangIn.value;
         const container = document.getElementById('brick-container-competitor');
-        if (comp === "Inconnu") { container.innerHTML = ""; return; }
+        if (comp === "Inconnu" || comp === "Unknown") { container.innerHTML = ""; return; }
      
-        container.innerHTML = '<div class="brick brick-competitor italic text-slate-400 text-xs animate-pulse">Réponse objection...</div>';
+        container.innerHTML = `<div class="brick brick-competitor italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['obj-loading']}</div>`;
 
 
-        const sys = `Tu es AE chez Revolut Business. Réponds en ${lang} à l'objection : 'Je travaille déjà avec ${comp}'. Max 40 mots.`;
-        const text = await apiCall(sys, `Concurrent : ${comp}.`);
-        container.innerHTML = `<div class="brick brick-competitor"><h5 class="text-[9px] font-black uppercase text-rose-600 mb-1">Réponse Objection : ${comp}</h5><div class="text-sm font-bold text-slate-900 italic">"${text}"</div></div>`;
+        const sys = `You are a Revolut Business AE. Reply in ${currentLang} to objection: 'I already work with ${comp}'. Focus on speed, transparency, and the interbank rate vs bank spread. Max 40 words.`;
+        const text = await apiCall(sys, `Competitor: ${comp}.`);
+        container.innerHTML = `<div class="brick brick-competitor"><h5 class="text-[9px] font-black uppercase text-rose-600 mb-1">${currentLang === 'fr' ? 'Réponse Objection' : 'Objection Handling'}: ${comp}</h5><div class="text-sm font-bold text-slate-900 italic">"${text}"</div></div>`;
     }
 
 
+    // FONCTION API MISE À JOUR POUR FONCTIONNER HORS GEMINI
     async function apiCall(sys, usr, isJson = false) {
         globalLoader.classList.remove('hidden');
-        const maxRetries = 5;
-       
+        
+        // Payload format for Google AI SDK / REST API
         const payload = {
             contents: [{ parts: [{ text: usr }] }],
             systemInstruction: { parts: [{ text: sys }] }
         };
-
-
+        
         if (isJson) {
-            payload.generationConfig = { responseMimeType: "application/json" };
+            payload.generationConfig = { 
+                responseMimeType: "application/json" 
+            };
         }
 
 
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error();
-                const result = await response.json();
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (generatedText) {
-                    globalLoader.classList.add('hidden');
-                    return generatedText;
-                }
-                throw new Error();
-            } catch (err) {
-                if (i === maxRetries - 1) {
-                    globalLoader.classList.add('hidden');
-                    return isJson ? '{"text": "Indisponible", "score": 50}' : "Assistant momentanément indisponible.";
-                }
-                await new Promise(res => setTimeout(res, Math.pow(2, i) * 1000));
+        try {
+            // Utilisation du modèle stable 1.5-flash
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("API Error Details:", errorData);
+                throw new Error("API call failed");
             }
+
+
+            const result = await response.json();
+            const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if (generatedText) {
+                globalLoader.classList.add('hidden');
+                return generatedText;
+            }
+            throw new Error("No data returned");
+            
+        } catch (err) {
+            console.error("Connection error:", err);
+            globalLoader.classList.add('hidden');
+            return isJson ? '{"text": "Service indisponible", "score": 50}' : "L'assistant IA est momentanément indisponible.";
         }
     }
 
@@ -1180,7 +1684,7 @@
         document.body.removeChild(el);
         const btn = document.querySelector('button[onclick="copyPitch()"]');
         const old = btn.innerHTML;
-        btn.innerText = 'COPIÉ !';
+        btn.innerText = currentLang === 'fr' ? 'COPIÉ !' : 'COPIED!';
         setTimeout(() => { btn.innerHTML = old; }, 2000);
     }
 
@@ -1188,6 +1692,7 @@
     [spotIn, eurIn, usdIn, startDateIn, endDateIn].forEach(el => el.addEventListener('input', update));
  
     window.onload = () => {
+        applyTranslations();
         initChart();
         initDates();
         update();
@@ -1195,6 +1700,4 @@
     };
 </script>
 </body>
-
 </html>
-
