@@ -1630,32 +1630,34 @@
 async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
 
+    // On utilise EXACTEMENT le modèle qui a 5 RPM sur ta capture
+    const modelName = "gemini-2.5-flash"; 
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
     try {
-        // On utilise EXACTEMENT le nom que ton scan a trouvé tout à l'heure
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${apiKey}`;
-
-        const payload = {
-            contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
-        };
-
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+            })
         });
 
         const result = await response.json();
 
+        if (response.status === 429) {
+            throw new Error("Limite de 5 requêtes/min atteinte. Attends un peu.");
+        }
+
         if (!response.ok) {
-            // Si ça échoue encore, on affiche le message brut de Google pour comprendre
-            throw new Error(result.error ? result.error.message : "Erreur Inconnue");
+            throw new Error(result.error ? result.error.message : "Erreur modèle");
         }
 
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("DEBUG FINAL :", err);
+        console.error("ERREUR :", err);
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return "IA : " + err.message;
     }
@@ -1688,6 +1690,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
