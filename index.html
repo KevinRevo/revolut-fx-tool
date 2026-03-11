@@ -1628,47 +1628,38 @@
     // FONCTION API MISE À JOUR POUR FONCTIONNER HORS GEMINI
     // --- FONCTION API CORRIGÉE (URL ET MODÈLE) ---
 async function apiCall(sys, usr, isJson = false) {
-    globalLoader.classList.remove('hidden');
+    if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
     
-    // Liste des modèles par ordre de probabilité de succès pour ton compte
-    const models = [
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash",
-        "gemini-pro"
-    ];
+    // ON UTILISE UNIQUEMENT LE MODÈLE STABLE POUR ÉVITER LES ERREURS DE SYNTAXE DES EXTENSIONS
+    const modelName = "gemini-1.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    
+    const payload = {
+        contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+    };
 
-    for (const modelName of models) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        
-        const payload = {
-            contents: [{ parts: [{ text: "INSTRUCTIONS: " + sys + "\n\nDEMANDE: " + usr }] }]
-        };
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-        try {
-            console.log(`Tentative avec le modèle : ${modelName}...`);
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        const result = await response.json();
 
-            const result = await response.json();
-
-            if (response.ok && result.candidates) {
-                console.log(`Succès avec le modèle : ${modelName}`);
-                globalLoader.classList.add('hidden');
-                return result.candidates[0].content.parts[0].text;
-            } else {
-                console.warn(`Le modèle ${modelName} a échoué (Code ${response.status})`);
-            }
-        } catch (err) {
-            console.error(`Erreur réseau sur ${modelName}`);
+        if (!response.ok) {
+            console.error("ERREUR GOOGLE RÉELLE :", result);
+            throw new Error(result.error ? result.error.message : "Erreur");
         }
-    }
 
-    // Si on arrive ici, aucun des 3 modèles n'a fonctionné
-    globalLoader.classList.add('hidden');
-    return isJson ? '{"text": "IA indisponible", "score": 50}' : "Désolé, Google bloque l'accès aux modèles. Vérifiez vos identifiants Cloud.";
+        if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
+        return result.candidates[0].content.parts[0].text;
+
+    } catch (err) {
+        console.error("ÉCHEC :", err);
+        if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
+        return isJson ? '{"text": "Erreur", "score": 50}' : "Erreur : " + err.message;
+    }
 }
 
     function copyPitch() {
@@ -1699,6 +1690,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
