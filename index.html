@@ -1630,8 +1630,8 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Correction de l'URL : On utilise gemini-1.5-flash qui est disponible sur v1beta
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Test avec l'URL de production stable v1 et le modèle flash
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
@@ -1642,29 +1642,33 @@ async function apiCall(sys, usr, isJson = false) {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
+        // LOG CRITIQUE : Affiche la réponse exacte de Google dans ta console
+        console.log("RÉPONSE BRUTE GOOGLE :", result);
+
         if (!response.ok) {
-            console.error("Détails Erreur API Google:", result);
-            // Si gemini-1.5-flash n'est pas dispo, on tente le nom complet de gemini-pro
-            if (result.error && result.error.status === "NOT_FOUND") {
-                 return "Erreur de configuration du modèle. Contactez l'administrateur.";
+            // Si c'est encore un 404, on tente le modèle "gemini-pro" immédiatement
+            if (response.status === 404) {
+                console.warn("Flash non trouvé, tentative avec gemini-pro...");
+                const backupUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+                const backupResponse = await fetch(backupUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const backupResult = await backupResponse.json();
+                if (backupResponse.ok) return backupResult.candidates[0].content.parts[0].text;
             }
-            throw new Error(`Code ${response.status}`);
+            throw new Error(result.error ? result.error.message : "Erreur API");
         }
 
-        const generatedText = result.candidates[0].content.parts[0].text;
         globalLoader.classList.add('hidden');
-        return generatedText;
+        return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("Crash connexion:", err);
+        console.error("CRASH FINAL :", err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Analyse momentanément indisponible.", "score": 50}' : "L'assistant est surchargé. Réessayez dans un instant.";
+        return isJson ? '{"text": "Service indisponible", "score": 50}' : "Erreur : " + err.message;
     }
 }
     function copyPitch() {
@@ -1695,6 +1699,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
