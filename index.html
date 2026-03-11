@@ -1630,41 +1630,38 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // Liste des modèles par ordre de probabilité de succès pour ton compte
-    const models = [
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash",
-        "gemini-pro"
-    ];
+    // On utilise le modèle qui a répondu 503 (signe de vie !)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
-    for (const modelName of models) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        
-        const payload = {
-            contents: [{ parts: [{ text: "INSTRUCTIONS: " + sys + "\n\nDEMANDE: " + usr }] }]
-        };
+    const payload = {
+        contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+    };
 
-        try {
-            console.log(`Tentative avec le modèle : ${modelName}...`);
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-            const result = await response.json();
+        const result = await response.json();
 
-            if (response.ok && result.candidates) {
-                console.log(`Succès avec le modèle : ${modelName}`);
-                globalLoader.classList.add('hidden');
-                return result.candidates[0].content.parts[0].text;
-            } else {
-                console.warn(`Le modèle ${modelName} a échoué (Code ${response.status})`);
-            }
-        } catch (err) {
-            console.error(`Erreur réseau sur ${modelName}`);
+        if (response.status === 503) {
+            globalLoader.classList.add('hidden');
+            return "L'IA se réveille... Patiente 30 secondes et réessaie !";
         }
+
+        if (!response.ok) throw new Error("Erreur Google");
+
+        globalLoader.classList.add('hidden');
+        return result.candidates[0].content.parts[0].text;
+
+    } catch (err) {
+        console.error("Erreur:", err);
+        globalLoader.classList.add('hidden');
+        return "Connexion en cours d'activation... (Réessaie dans un instant)";
     }
+}
 
     // Si on arrive ici, aucun des 3 modèles n'a fonctionné
     globalLoader.classList.add('hidden');
@@ -1698,6 +1695,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
