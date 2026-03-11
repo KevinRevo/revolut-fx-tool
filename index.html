@@ -1629,9 +1629,13 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
+    // On utilise v1 qui est souvent plus permissive pour les appels fetch directs
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
     const payload = {
-        contents: [{ parts: [{ text: usr }] }],
-        systemInstruction: { parts: [{ text: sys }] }
+        contents: [{ 
+            parts: [{ text: usr + "\n\nInstructions système : " + sys }] 
+        }]
     };
     
     if (isJson) {
@@ -1641,10 +1645,6 @@ async function apiCall(sys, usr, isJson = false) {
     }
 
     try {
-        // L'URL correcte doit inclure v1beta ou v1 et se terminer exactement par :generateContent
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        
-        
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1654,17 +1654,19 @@ async function apiCall(sys, usr, isJson = false) {
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Détails Erreur API:", errorData);
+            // Si c'est un 404, c'est que le modèle ou la clé ne sont pas reconnus sur ce lien
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
 
         const result = await response.json();
-        const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
         
-        if (generatedText) {
+        if (result.candidates && result.candidates[0].content) {
+            const generatedText = result.candidates[0].content.parts[0].text;
             globalLoader.classList.add('hidden');
             return generatedText;
         }
-        throw new Error("Aucune donnée reçue de l'IA");
+        
+        throw new Error("Format de réponse inconnu");
         
     } catch (err) {
         console.error("Erreur de connexion:", err);
@@ -1702,4 +1704,5 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
