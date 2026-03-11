@@ -1631,28 +1631,8 @@ async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
 
     try {
-        // ÉTAPE 1 : On demande la liste des modèles disponibles pour TA clé
-        const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-        const listRes = await fetch(listUrl);
-        const listData = await listRes.json();
-
-        if (!listRes.ok || !listData.models) {
-            console.error("Impossible de lister les modèles:", listData);
-            throw new Error("Clé API invalide ou API non activée");
-        }
-
-        // ÉTAPE 2 : On cherche un modèle qui supporte la génération de contenu
-        // On cherche d'abord flash, puis pro, puis n'importe lequel
-        const availableModels = listData.models.map(m => m.name);
-        console.log("Modèles détectés sur ton compte :", availableModels);
-
-        let targetModel = availableModels.find(m => m.includes('gemini-1.5-flash')) 
-                       || availableModels.find(m => m.includes('gemini-pro'))
-                       || availableModels[0];
-
-        console.log("Modèle sélectionné automatiquement :", targetModel);
-
-        // ÉTAPE 3 : On lance l'appel avec le bon nom
+        // On force gemini-1.5-flash qui a 15 requêtes par minute en gratuit
+        const targetModel = "models/gemini-1.5-flash";
         const url = `https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${apiKey}`;
 
         const payload = {
@@ -1667,15 +1647,19 @@ async function apiCall(sys, usr, isJson = false) {
 
         const result = await response.json();
 
-        if (!response.ok) throw new Error(result.error ? result.error.message : "Erreur génération");
+        if (response.status === 429) {
+            throw new Error("Quota dépassé. Attendez 1 minute avant de recliquer.");
+        }
+
+        if (!response.ok) throw new Error(result.error ? result.error.message : "Erreur");
 
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("ÉCHEC AUTO-SELECT :", err);
+        console.error("ERREUR :", err);
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
-        return "Erreur : " + err.message;
+        return "IA : " + err.message;
     }
 }
 
@@ -1707,6 +1691,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
