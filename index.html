@@ -1385,7 +1385,6 @@
             spotIn.classList.remove('opacity-50');
             spotLoader.classList.add('hidden');
             update();
-            generateMarketBrick();
             renderUrgencyMatrix(); // Call matrix update when rates update
         }
     }
@@ -1543,16 +1542,27 @@
 
 
     async function generateInitialHook() {
-        const emptyState = document.getElementById('empty-state');
-        if (emptyState) emptyState.style.display = 'none';
-        const industry = document.getElementById('client-industry').value;
-        const container = document.getElementById('brick-container-hook');
-        container.innerHTML = `<div class="brick brick-hook italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['gen-loading']}</div>`;
-     
-        const sys = `You are an AE at Revolut Business. Write a call HOOK in ${currentLang}. Hook: 'Your job isn't to be a trader, but to manage your inventory'. Max 80 words. Focus on the value of hedging.`;
-        const text = await apiCall(sys, `Industry: ${industry}.`);
-        container.innerHTML = `<div class="brick brick-hook font-medium text-slate-700 leading-relaxed">${text}</div>`;
-    }
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.style.display = 'none';
+    
+    const industry = document.getElementById('client-industry').value;
+    const hookContainer = document.getElementById('brick-container-hook');
+    
+    // --- ÉTAPE 1 : LE PITCH ---
+    hookContainer.innerHTML = `<div class="brick brick-hook italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['gen-loading']}</div>`;
+    
+    const sys = `You are an AE at Revolut Business. Write a call HOOK in ${currentLang}. Hook: 'Your job isn't to be a trader, but to manage your inventory'. Max 80 words. Focus on the value of hedging.`;
+    const text = await apiCall(sys, `Industry: ${industry}.`);
+    hookContainer.innerHTML = `<div class="brick brick-hook font-medium text-slate-700 leading-relaxed">${text}</div>`;
+
+    // --- PAUSE DE SÉCURITÉ (1.5 seconde) ---
+    // On attend un peu pour ne pas brusquer le quota de 5 RPM de Google
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // --- ÉTAPE 2 : L'ANALYSE ---
+    // On appelle manuellement l'analyse après le pitch
+    generateMarketBrick();
+}
 
 
     async function generateMarketBrick() {
@@ -1690,6 +1700,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
