@@ -1629,24 +1629,36 @@
     // --- FONCTION API CORRIGÉE (URL ET MODÈLE) ---
 async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
-    
-    // On passe sur la version stable 'v1' qui est plus rigoureuse sur les noms
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const payload = {
-        contents: [{
-            parts: [{ text: sys + "\n\n" + usr }]
-        }],
-        // Ajout d'une configuration de sécurité pour éviter les rejets silencieux
-        safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-        ]
-    };
 
     try {
+        // ÉTAPE 1 : On demande la liste des modèles disponibles pour TA clé
+        const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+        const listRes = await fetch(listUrl);
+        const listData = await listRes.json();
+
+        if (!listRes.ok || !listData.models) {
+            console.error("Impossible de lister les modèles:", listData);
+            throw new Error("Clé API invalide ou API non activée");
+        }
+
+        // ÉTAPE 2 : On cherche un modèle qui supporte la génération de contenu
+        // On cherche d'abord flash, puis pro, puis n'importe lequel
+        const availableModels = listData.models.map(m => m.name);
+        console.log("Modèles détectés sur ton compte :", availableModels);
+
+        let targetModel = availableModels.find(m => m.includes('gemini-1.5-flash')) 
+                       || availableModels.find(m => m.includes('gemini-pro'))
+                       || availableModels[0];
+
+        console.log("Modèle sélectionné automatiquement :", targetModel);
+
+        // ÉTAPE 3 : On lance l'appel avec le bon nom
+        const url = `https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${apiKey}`;
+
+        const payload = {
+            contents: [{ parts: [{ text: sys + "\n\n" + usr }] }]
+        };
+
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1655,17 +1667,13 @@ async function apiCall(sys, usr, isJson = false) {
 
         const result = await response.json();
 
-        if (!response.ok) {
-            console.error("ERREUR RÉELLE GOOGLE :", result);
-            // Si V1 échoue aussi, on tente le nom court 'gemini-pro'
-            throw new Error(result.error ? result.error.message : "Erreur Serveur");
-        }
+        if (!response.ok) throw new Error(result.error ? result.error.message : "Erreur génération");
 
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return result.candidates[0].content.parts[0].text;
 
     } catch (err) {
-        console.error("ÉCHEC FINAL :", err);
+        console.error("ÉCHEC AUTO-SELECT :", err);
         if (typeof globalLoader !== 'undefined') globalLoader.classList.add('hidden');
         return "Erreur : " + err.message;
     }
@@ -1699,6 +1707,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
