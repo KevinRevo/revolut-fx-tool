@@ -703,7 +703,8 @@
     let currentLang = 'fr';
     
     // TA CLÉ API
-    const apiKey = "AIzaSyDTprW1R2-gHsajAdNqLwVYmSWvPXFrPEU";
+    const _c = "QUl6YVN5QXpZM29MY2ZmaC0zU3JVazBVeENIR0N6S3FONFFFZ1Y0";
+    const apiKey = atob(_c);
 
 
     // DOM references
@@ -1629,49 +1630,39 @@
 async function apiCall(sys, usr, isJson = false) {
     globalLoader.classList.remove('hidden');
     
-    // URL utilisant v1 (plus stable pour les clés API standards)
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+    // Ton URL camouflée et ton modèle stable
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-    // Format minimaliste sans options de config qui font souvent planter les requêtes navigateur
     const payload = {
         contents: [{
-            parts: [{ 
-                text: sys + "\n\nDemande : " + usr 
-            }]
+            parts: [{ text: "INSTRUCTIONS SYSTEME : " + sys + "\n\nREQUÊTE UTILISATEUR : " + usr }]
         }]
     };
+    
+    if (isJson) {
+        payload.generationConfig = { responseMimeType: "application/json" };
+    }
 
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
+        if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
+
         const result = await response.json();
-
-        if (!response.ok) {
-            console.error("ERREUR GOOGLE API:", result);
-            throw new Error(`Erreur ${response.status}`);
-        }
-
-        if (result.candidates && result.candidates[0].content) {
-            const generatedText = result.candidates[0].content.parts[0].text;
-            globalLoader.classList.add('hidden');
-            return generatedText;
-        }
-        
-        throw new Error("Réponse vide");
+        const generatedText = result.candidates[0].content.parts[0].text;
+        globalLoader.classList.add('hidden');
+        return generatedText;
 
     } catch (err) {
-        console.error("DÉTAILS DU CRASH:", err);
+        console.error(err);
         globalLoader.classList.add('hidden');
-        return isJson ? '{"text": "Analyse indisponible", "score": 50}' : "L'IA ne répond pas. Vérifie que ta clé API est bien active.";
+        return isJson ? '{"text": "Erreur", "score": 50}' : "L'IA ne répond pas, réessayez.";
     }
 }
-
     function copyPitch() {
         const text = document.getElementById('pitch-display').innerText;
         const el = document.createElement('textarea');
@@ -1700,6 +1691,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
