@@ -1630,9 +1630,11 @@
 async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
 
-    // On utilise EXACTEMENT le modèle qui a 5 RPM sur ta capture
-    const modelName = "gemini-2.5-flash"; 
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // On utilise le nom de modèle standard pour la production v1
+    const modelName = "gemini-1.5-flash"; 
+
+    // On construit l'URL en utilisant la variable modelName
+    const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
 
     try {
         const response = await fetch(url, {
@@ -1690,6 +1692,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
