@@ -1631,9 +1631,9 @@ async function apiCall(sys, usr, isJson = false) {
     if (typeof globalLoader !== 'undefined') globalLoader.classList.remove('hidden');
 
     // On utilise le nom de modèle standard pour la production v1
-    const modelName = "gemini-1.5-flash"; 
+    const modelName = "gemini-2.5-flash"; 
 
-    // On construit l'URL en utilisant la variable modelName
+    // On utilise l'URL v1 avec le modèle 2.5 pour débloquer les quotas payants
     const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
 
     try {
@@ -1692,6 +1692,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
