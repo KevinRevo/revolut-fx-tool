@@ -1561,9 +1561,8 @@
         const spot = spotIn.value;
         const container = document.getElementById('brick-container-market');
         const sentimentCard = document.getElementById('sentiment-card');
-       
+        
         if (base === "UNKNOWN" || quoted === "UNKNOWN") return;
-
 
         container.innerHTML = `<div class="brick brick-market italic text-slate-400 text-xs animate-pulse">${i18n[currentLang]['ana-loading']}</div>`;
         if (sentimentCard) {
@@ -1571,19 +1570,31 @@
             updateSentiment(50, currentLang === 'fr' ? "Analyse..." : "Analyzing...");
         }
 
-
         const sysPrompt = `You are a Revolut Business FX expert. Analyze ${base}/${quoted} at ${spot} in ${currentLang}.
         1. Fast market analysis without financial advice (Max 60 words).
         2. Sentiment score 0-100 (0 Bearish, 100 Bullish).
-        JSON format: {"text": "analysis", "score": 75}`;
-       
+        JSON format ONLY: {"text": "analysis", "score": 75}`;
+        
         try {
             const response = await apiCall(sysPrompt, `Pair ${base}/${quoted} @ ${spot}.`, true);
-            const data = JSON.parse(response);
-            container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1">Market Analysis (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${data.text}</div></div>`;
-            updateSentiment(data.score);
+            
+            // --- LE CORRECTIF EST ICI ---
+            // On cherche la première { et la dernière } pour isoler le JSON
+            const start = response.indexOf('{');
+            const end = response.lastIndexOf('}');
+            
+            if (start !== -1 && end !== -1) {
+                const cleanJson = response.substring(start, end + 1);
+                const data = JSON.parse(cleanJson);
+                container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1 font-bold">Market Analysis (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${data.text}</div></div>`;
+                updateSentiment(data.score);
+            } else {
+                // Si pas de JSON, on affiche le texte brut pour ne pas laisser "unavailable"
+                container.innerHTML = `<div class="brick brick-market"><h5 class="text-[9px] font-black uppercase text-sky-600 mb-1 font-bold">Market Analysis (${base}/${quoted})</h5><div class="text-sm font-semibold text-slate-800">${response.replace(/```json|```/g, "")}</div></div>`;
+            }
         } catch (e) {
-            container.innerHTML = `<div class="brick brick-market">Analysis unavailable.</div>`;
+            console.error("Erreur d'analyse:", e);
+            container.innerHTML = `<div class="brick brick-market">Analyse reçue mais erreur d'affichage.</div>`;
         }
     }
 
@@ -1692,6 +1703,7 @@ async function apiCall(sys, usr, isJson = false) {
 </body>
 
 </html>
+
 
 
 
